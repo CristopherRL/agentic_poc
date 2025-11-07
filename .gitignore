@@ -1,0 +1,14 @@
+# Private files
+docs/private/
+
+# Virtual environment
+.venv/
+
+# Environment variables
+.env
+
+# IDE files
+.idea/
+.vscode/
+
+.gitignore
