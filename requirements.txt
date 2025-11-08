@@ -2,7 +2,12 @@ fastapi
 uvicorn
 langchain
 langchain-openai
+langchain-community
 pydantic
 pydantic-settings
 python-dotenv
+pandas
+SQLAlchemy
+faiss-cpu
+pypdf
 

@@ -1,0 +1,489 @@
+# TOYOTA RAV4 OWNER'S MANUAL
+# Pages 24-50 Extracted Information (Translated from Spanish)
+
+================================================================================
+PAGE 24 - Before Driving
+--------------------------------------------------------------------------------
+**Floor mat installation:**
+- Only use floor mats designed specifically for the vehicle's model and year
+- Insert the retention hooks into the floor mat eyelets
+- Turn the upper knob of each hook to secure them
+- **Warning:** Do not place floor mats on top of other mats, as they may interfere with the pedals
+
+================================================================================
+PAGE 25 - Safe Driving
+--------------------------------------------------------------------------------
+**Correct driving posture:**
+- Adjust seat and mirrors to the appropriate position before driving
+- Sit upright and well-supported in the seat
+- The distance from the chest to the steering wheel should be 25 cm (10 inches)
+
+**Mirror adjustment:**
+- Ensure clear rearward visibility by adjusting interior and exterior mirrors
+
+================================================================================
+PAGE 26 - Safety Warnings
+--------------------------------------------------------------------------------
+**Important precautions:**
+- Only adjust the driver's seat position when the vehicle is stationary
+- Do not place cushions between the driver/passenger and the seatback
+- Do not place objects under the front seats
+- Always respect speed limits
+- Take regular breaks on long trips
+- If you feel tired or sleepy, stop immediately
+
+================================================================================
+PAGE 27 - Seat Belts
+--------------------------------------------------------------------------------
+**Correct use:**
+- All occupants must wear a seat belt before driving
+- Each belt is for one person only
+- Do not share belts with children
+- Toyota recommends that children travel in the rear seats with a seat belt and/or child restraint system
+- Do not recline the seat too much to ensure effectiveness
+
+**Special groups:**
+- **Pregnant women:** Use the belt correctly positioned; extend the shoulder portion to avoid contact with the abdomen
+- **Persons with medical conditions:** Use the belt appropriately
+- **Children:** Use an appropriate child restraint system
+
+**Damage and wear:**
+- Do not allow the belt to get jammed in the door
+- If it is damaged, it must not get jammed in the door
+
+================================================================================
+PAGE 28 - Correct Use of Seat Belts (continued)
+--------------------------------------------------------------------------------
+**Periodic inspection:**
+- Check belts periodically for cuts, fraying, and loose parts
+- Do not attempt to install, remove, or modify seat belts
+- Do not use a belt if it is damaged or not working correctly
+- Replace the belt assembly if the vehicle has been in a serious accident
+
+**Use of seat belts for adults:**
+- Extend the shoulder belt so it is completely over the shoulder without touching the neck
+- Position the lap belt as low as possible over the hips
+- Adjust the seatback position
+- Sit upright and well-supported
+- Do not twist the belt
+
+================================================================================
+PAGE 29 - Seat Belt Adjustment
+--------------------------------------------------------------------------------
+**Fastening and unfastening:**
+- To fasten: push the plate into the buckle until a click is heard
+- To unfasten: press the release button
+
+**Emergency Locking Retractor (ELR):**
+- Allows free movement of the belt but locks during a sudden stop or impact
+
+**Shoulder anchor height adjustment (front seats):**
+- Push down while pressing the release button
+- Push up while pressing the release button
+- Adjust the height until a click is heard
+
+**Seat belt pretensioners (front seats):**
+- In vehicles with model code "X": help to quickly retract the belts in certain severe frontal impacts
+- Pretensioners do not activate in minor, side, or rear impacts
+
+================================================================================
+PAGE 30 - Pretensioners (continued)
+--------------------------------------------------------------------------------
+**Operation:**
+- Help to quickly retract belts when the vehicle suffers certain types of severe frontal collisions
+- Do not activate in minor impacts
+
+**Replacement after activation:**
+- If the vehicle suffers multiple collisions, the pretensioners will activate in the first or second subsequent collision
+
+**Warning about pretensioners:**
+- If the SRS warning light stays on or does not work, contact an authorized Toyota dealer
+- Failure to do so may cause death or serious injury
+
+================================================================================
+PAGE 31 - SRS Airbag System
+--------------------------------------------------------------------------------
+**Function:**
+- SRS airbags inflate when the vehicle suffers certain types of severe impacts
+- They work together with seat belts to reduce the risk of death or serious injury
+
+**Location of SRS airbags:**
+The system includes:
+- A) Driver/Front passenger SRS airbag (frontal)
+- B) Knee SRS airbag
+- C) Front passenger airbag
+- D) Side impact sensors (front door)
+- E) Curtain shield airbags
+- F) Seat belt pretensioners and force limiters (front seats)
+- G) Side impact sensors (frontal)
+- H) Side airbags
+- I) Driver airbag
+- J) Knee airbag
+- K) SRS warning light
+- L) Airbag sensor assembly
+- M) PASSENGER AIR BAG indicator lights (if equipped)
+
+================================================================================
+PAGE 32 - SRS System Components
+--------------------------------------------------------------------------------
+**Detailed diagram:**
+Shows the location of all airbag system components with reference letters (A-M):
+- Front impact sensors
+- Manual airbag on-off switch (if equipped)
+- Front passenger airbag
+- Side impact sensors in front doors
+- Curtain shield airbags
+- Seat belt pretensioners and force limiters
+- Frontal side impact sensors
+- Side airbags
+- Driver airbag
+- Knee airbag
+- SRS warning light
+- Airbag sensor assembly
+- PASSENGER AIR BAG indicator lights
+
+================================================================================
+PAGE 33 - Airbag Deployment Conditions
+--------------------------------------------------------------------------------
+**Deployment conditions (frontal SRS airbags):**
+- Deploy when the vehicle suffers a frontal impact exceeding a set threshold
+- Threshold speed is considerably higher in the following situations:
+    - If the vehicle hits an object like a parked vehicle or a pole
+    - If the vehicle suffers an under-ride collision (collision under a vehicle, hitting a curb edge, falling into a deep hole)
+    - If the vehicle hits the top of a collision (only pretensioners may activate)
+
+**Deployment conditions (side and curtain SRS airbags):**
+- Deploy when the vehicle suffers a side impact at a force level produced by the impact force of a high-speed vehicle
+- Both may deploy in the event of a severe frontal collision
+
+**Emergency calls (vehicles with ERA-eCall/GLONASS/EVAK):**
+- If one of the following occurs, the system may make an emergency call to the ERA-eCall/GLONASS/EVAK center
+- An SRS airbag deploys
+- Seat belt pretensioners activate without airbag deployment
+- Vehicle with ERA-eCall/GLONASS/EVAK: both curtain airbags may also deploy in the event of a vehicle rollover
+
+================================================================================
+PAGE 34 - Types of Collisions
+--------------------------------------------------------------------------------
+**Situations where SRS may NOT deploy properly:**
+Airbags may deploy even in collisions other than frontal ones. Examples shown:
+- Hitting a curb, pavement edge, or hard surface
+- Falling into a hole or jumping over a deep bump
+- Hard landing or fall
+
+**Vehicles with ERA-eCall/GLONASS/EVAK:**
+- Curtain airbags may also deploy in situations shown in the illustration
+- Vehicle's roll angle is marginal
+- Vehicle slides and hits a curb
+
+**Types of collisions that DO NOT deploy SRS airbags (frontal):**
+- Frontal airbags generally do not inflate if the vehicle suffers a side or rear collision, if it rolls over, or if it is involved in a low-speed frontal collision
+
+================================================================================
+PAGE 35 - More on Collisions and Airbags
+--------------------------------------------------------------------------------
+**Additional situations where SRS airbags DO NOT inflate:**
+- Curtain airbags do not inflate if the vehicle is in a rear collision, if it rolls over, or is in a low-speed side collision
+- Rear collision
+- Pitching and rolling over
+
+**When to contact a Toyota dealer:**
+- After SRS airbags have inflated, the vehicle cannot be driven until repaired
+- Contact an authorized Toyota dealer or authorized workshop as soon as possible for inspection and repair
+
+**Conditions where SRS airbags may NOT inflate (despite damage):**
+- The front of the vehicle is damaged, deformed, or involved in an accident not severe enough to cause deployment
+- The door or surrounding area is damaged, deformed, or has severe SRS damage but not enough to deploy
+- The rear section of the steering wheel, dashboard near the front passenger, or back of the instrument panel is scratched, cracked, or damaged
+
+**Contact with system components:**
+- The SRS airbags deploy with considerable force and may cause abrasions or injuries
+- Immediately after deployment, SRS airbag components will be hot
+- Do not touch any part of the components immediately after
+
+**Ventilation after deployment:**
+- If breathing becomes difficult after deployment, open a door or window
+- Wash off any residue as soon as possible to prevent skin irritation
+
+**Areas where airbags are stored:**
+- If areas where SRS airbags are stored (steering wheel, dashboard, roof pillars) are scratched, cracked, or damaged, have them replaced
+
+================================================================================
+PAGE 36 - Precautions with SRS Airbags
+--------------------------------------------------------------------------------
+**Warnings about deployment:**
+- The driver's SRS airbag deploys with considerable force
+- Being too close to the airbag can be dangerous
+
+**Correct driver position:**
+- Position yourself as far as possible from the airbag while maintaining control of the vehicle
+- Place the center of the chest at least 25 cm (10 inches) from the steering wheel
+
+**Adjustment options:**
+- Recline the seatback slightly if possible
+- Tilt the seatback slightly rearward (though vehicle designs vary)
+
+**Seat position:**
+- The seat should be adjusted according to the recommendations above while maintaining good reach to the steering wheel and view of the instrument panel
+
+**Front passenger airbag:**
+- Also deploys with considerable force
+- Can cause serious injury, especially if the front passenger is very close to the airbag
+- Position as far as possible from the airbag
+
+**Warnings about modifications:**
+- Portion of the front pillars, side roof pillars, or roof side rails is scratched, cracked, or damaged
+- Portion of the seat where the side airbag is located is scratched, cracked, or damaged
+
+================================================================================
+PAGE 37 - Prohibitions with Airbags
+--------------------------------------------------------------------------------
+**What NOT to do:**
+- Do not lean against the door, roof side, or front/side pillars
+- Do not allow anyone to kneel on the passenger seat towards the door or put their head or hands out of the vehicle
+- Do not place anything against areas like the door, windshield, side window, front pillar, side roof pillar, or roof handles. These items can become projectiles when airbags deploy
+- Do not place anything that rests or leans against areas of the dashboard, steering wheel, instrument panel near the front passenger. These items can impede SRS airbag deployment
+
+================================================================================
+PAGE 38 - More Precautions with Airbags
+--------------------------------------------------------------------------------
+**Do not use accessories that cover parts where side airbags are located:**
+- Accessories can prevent correct airbag inflation, disable the system, or cause accidental deployment, resulting in death or serious injury
+
+**Vehicles without smart entry and start system:**
+- Do not place keys or accessories on the keyring. Objects can restrict the deployment of the driver's knee airbag, causing injury
+
+**Do not hang hangers or hard objects on coat hooks:**
+- All hard objects should be stored in the glove box. These objects can cause death or serious injury if the curtain airbag deploys
+
+**If a seat cover is installed:**
+- If it is placed in an area where the airbag deploys, make sure to remove it
+
+**Ventilation:**
+- If breathing becomes difficult after airbag deployment, open a door or window or leave the vehicle if it is safe to do so
+- Wash off any residue as soon as possible to prevent skin irritation
+
+**Modifications and removal of SRS:**
+- If areas where SRS airbags are stored are damaged, contact a Toyota dealer for replacement
+- Do not perform repairs, modifications, removal, or disassembly of airbags
+- Do not install a front protection grille, fan on the roof bar, switches, or accessories on the keyring
+- Modifications
+
+================================================================================
+PAGE 39 - Exhaust Gas Precautions
+--------------------------------------------------------------------------------
+**Harmful substances in exhaust gases:**
+- Exhaust gases contain harmful carbon monoxide (CO), which is colorless and odorless
+
+**Important warnings:**
+- Carbon monoxide can cause death or serious injury from mild poisoning or can lead to death
+- It can cause loss of consciousness or death
+
+**Important points when driving:**
+- Keep the rear door closed
+- If you smell exhaust fumes in the vehicle with the rear door closed, have the vehicle inspected immediately by an authorized Toyota dealer or authorized repair shop
+
+**When parking:**
+- If the vehicle is in a poorly ventilated or enclosed area like a garage, do not leave the vehicle with the engine running for a long time
+- Do not leave the engine running in an enclosed area or where there is snow accumulation
+- Do not leave the engine running in an area with snow accumulation; if snow is piled up, gases can accumulate and enter the vehicle
+
+================================================================================
+PAGE 40 - Exhaust System
+--------------------------------------------------------------------------------
+**Warning about the exhaust pipe:**
+- The exhaust system needs to be checked periodically
+- If there is a hole, crack, significant deterioration, or damage to the exhaust pipe, be cautious and have the vehicle inspected by an authorized Toyota dealer, authorized workshop, or any reliable repairer
+
+================================================================================
+PAGE 41 - Child Safety - Airbag Deactivation
+--------------------------------------------------------------------------------
+**Manual airbag on-off switch (if equipped):**
+- This system deactivates the front passenger airbag
+- Only deactivate when using a child restraint system in the front passenger seat
+
+**System components:**
+- A) PASSENGER AIR BAG indicator lights
+- B) Manual airbag on-off switch
+
+**Deactivation for front passenger:**
+
+**Vehicles with smart entry and start system:**
+- Insert the mechanical key into the cylinder and turn to the "OFF" position
+- The "OFF" indicator light turns on only when the switch is ON
+
+**Vehicles without smart entry and start system:**
+- Insert the key into the cylinder and turn to the "OFF" position
+- The "OFF" indicator light turns on only when the switch is ON
+
+**PASSENGER AIR BAG indicator information:**
+- If any of the following problems occur, there may be a malfunction
+- "OFF" indicator light does not illuminate when the switch is ON
+- The indicator light does not change when the manual airbag on-off switch is changed to "ON" or "OFF"
+
+================================================================================
+PAGE 42 - Traveling with Children
+--------------------------------------------------------------------------------
+**Warnings about child restraint system:**
+- For safety reasons, always install the restraint system in the rear seat
+- In the event the rear seat cannot be used, the front seat may be used
+- If the manual airbag on-off switch is set to "OFF", the airbag deployment (inflation) can cause serious injury or death
+
+**When a child restraint system is installed in the front passenger seat:**
+- Ensure the manual airbag on-off switch is set to "ON"
+- If it is not set, the airbag may not deploy in case of an accident, which could result in death or serious injury
+
+**Observe precautions when traveling with children:**
+- Use a child restraint system until the child is large enough to use the vehicle's seat belt correctly
+- It is recommended that children sit in the rear seats to avoid accidental contact with the gear lever, windshield wiper switch, etc.
+- Use the child safety lock on the rear door or the power window lock to prevent accidental opening of the door or window
+- Do not allow small children to operate equipment that could trap or pinch body parts, such as power windows, hood, rear door, seats, etc.
+
+================================================================================
+PAGE 43 - Child Restraint Systems
+--------------------------------------------------------------------------------
+**Warnings about children in the vehicle:**
+- Never leave children unattended in the vehicle, never allow children to have or play with the keys
+- Children can start the vehicle or shift it into neutral, play with windows, get trapped in a window, hood, rear door, or other vehicle features. Additionally, heat buildup or cold can be fatal to children
+
+**Before installing a child restraint system:**
+- Precautions must be observed, different types of systems are available as well as installation methods written in this manual
+- Use a child restraint system when traveling with a small child who cannot properly use the vehicle's seat belt
+- The use of a genuine Toyota restraint system is recommended, as it is safer for use in this vehicle
+- Genuine Toyota systems are made specifically for Toyota vehicles and can be purchased at a Toyota dealer
+
+**Table of contents:**
+- Points to remember: P.44
+- When using a child restraint system: P.45
+- Child restraint system compatibility for each seating position: P.48
+- Child restraint system installation method: P.54
+
+================================================================================
+PAGE 44 - Points to Remember about Restraint Systems
+--------------------------------------------------------------------------------
+**For effective protection:**
+- For effective protection in car accidents and sudden stops, the child must be properly secured using a seat belt or a child restraint system
+- Toyota strongly recommends the use of an appropriate child restraint system that fits the child's weight and size, installed correctly in the rear seat
+- Statistics show that a child is safer when properly restrained in the rear seat than in the front seat
+
+**Holding a child in your arms:**
+- Holding a child in your or someone's arms is not a substitute for a child restraint system
+- In an accident, the child can be crushed against the vehicle's interior or between the holder and the vehicle's interior
+
+**Installation of the restraint system:**
+- If the child restraint system is not installed properly, passengers or other occupants can be seriously injured or even die in the event of a sudden brake, swerve, or accident
+- If the vehicle were to receive a strong impact from an accident, it is possible the child may not die or be seriously injured
+- In such cases, do not reuse the restraint system
+
+================================================================================
+PAGE 45 - Use of Child Restraint System
+--------------------------------------------------------------------------------
+**Warnings about installation:**
+- Depending on the child restraint system, installation may be difficult or impossible
+- Ensure the restraint system is appropriate for installation in the vehicle
+- Always carefully follow the system's attachment method and installation method written in the operation manual included with the system
+
+**Secure the restraint system correctly:**
+- Ensure the restraint system is properly secured at the seat level if not in use
+- Do not store the system in the passenger compartment
+
+**Disassembly for strong impacts:**
+- If it is necessary to disassemble the child restraint system, remove it from the vehicle or store it safely in the luggage compartment
+
+**When a child is traveling:**
+- If the child restraint system is not installed properly, other passengers can be seriously injured or even die in case of a sudden brake or accident
+- If the vehicle were to receive a strong impact from an accident, the child might not be injured or the restraint system may not be visibly damaged
+- In such cases, do not reuse the restraint system
+
+================================================================================
+PAGE 46 - Installation in Front Seat
+--------------------------------------------------------------------------------
+**Warnings about vehicles without manual on-off switch:**
+- Never use a rear-facing child restraint system in the front passenger seat when the manual airbag on-off is set to "ON"
+- The force of the rapidly inflating front passenger airbag can cause death or serious injury to the child
+
+**Vehicles with manual on-off switch:**
+- Never use a rear-facing child restraint system when the airbag is enabled
+- The force of the rapid inflation can cause death or serious injury to the child
+
+================================================================================
+PAGE 47 - More on Child Restraint Systems
+--------------------------------------------------------------------------------
+**Airbag warning symbols:**
+Shows a large "AIRBAG" warning symbol with illustrations
+
+**Additional warnings:**
+- Only place a forward-facing child restraint system in the front passenger seat when the airbag is disabled
+- If the airbag is not disabled, it can cause death or serious injury to the child if the airbag deploys
+
+**Child's position:**
+- Do not allow the child to lean their body against the door or seat area, front or side pillar, or roof pillar where SRS airbags and curtain airbags deploy, even if the child is in a junior seat
+- Dangerous if SRS airbags and curtain airbags deploy; can cause death or serious injury to the child
+
+**Installation of a junior seat:**
+- When a junior seat is installed, depending on the type of junior seat in the rear seat, it may not be possible to correctly use the seat belts in positions next to the junior seat
+- Ensure the belt fits across the center of the shoulder and low on the hips
+- If it does not fit or if the belt interferes with the child restraint system, move to a different position
+
+================================================================================
+PAGE 48 - Child Restraint Compatibility
+--------------------------------------------------------------------------------
+**Use of appropriate restraint system:**
+- Use a child restraint system appropriate for the child's age and size
+- Install in the rear seat
+
+**Before confirming compatibility:**
+- Verify the child restraint system standards
+- Use a restraint system that complies with UN(ECE) R44 or UN(ECE) R129
+
+**Check approval mark:**
+- The following approval mark is shown on child restraint systems for recommended systems
+- Check the approval mark attached to the restraint system
+
+**Example of regulation number shown:**
+- Shows image of a regulation label
+- A) UN(ECE) R44 approval mark: The applicable child weight range for UN(ECE) R44 approval mark is indicated
+- B) UN(ECE) R129 approval mark: The applicable child height range as well as the weight range for UN(ECE) R129 approval mark is indicated
+
+**Check category:**
+- Check the restraint system's approval mark for which of the following categories the system is appropriate
+- For detailed information on capabilities, check the user guide included with the restraint system or contact the system manufacturer
+
+Categories: "universal", "semi-universal", "restricted", "vehicle specific"
+
+================================================================================
+PAGE 49 - Compatibility by Seating Position
+--------------------------------------------------------------------------------
+**Left-hand drive vehicles:**
+Shows diagram with seating positions and compatibility symbols
+
+**Right-hand drive vehicles:**
+Shows diagram with seating positions and compatibility symbols
+
+**Notes:**
+- UN(ECE) R44 and UN(ECE) R129 are regulations for child restraint systems
+- Some child restraint systems mentioned in the table may not be available outside the EU area
+
+================================================================================
+PAGE 50 - Installation Instructions
+--------------------------------------------------------------------------------
+**Symbols shown on the page:**
+- Deactivation of front passenger airbag
+- Activation of front passenger airbag and no manual on-off switch
+- Never use a rear-facing child restraint system in the front passenger seat
+- Appropriate for "universal" category with belt
+- Appropriate for forward-facing "universal" category with belt
+- Appropriate for forward-facing "semi-universal" child restraint system given in the recommended list
+- Appropriate for i-Size and ISOFIX restraint system
+
+**Instructions on installation:**
+- Move the front seat completely backward; if the passenger seat height can be adjusted, move it to the highest upper position
+- If the headrest interferes with the child restraint system and installation and the headrest can be removed, remove the headrest; otherwise, put the headrest in the uppermost position
+
+**When installing a restraint system in the rear seats:**
+- Adjust the front seat so it does not interfere with the child or the child restraint system
+- When installing a seat with a support base, if the seat interferes with the seatback when latched into the support base, move the seatback forward until there is no interference
+
+================================================================================
+END OF EXTRACTED INFORMATION (Pages 24-50)
+================================================================================

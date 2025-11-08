@@ -1,0 +1,453 @@
+# TOYOTA YARIS GRMN OWNER'S MANUAL
+# Pages 24-47 Extracted Information
+
+================================================================================
+PAGE 24: Main Owner's Manual Information
+--------------------------------------------------------------------------------
+For your information
+
+■ Main Owner's Manual
+
+Please note that this manual applies to all models and all equipment including options. Therefore, you may find some explanations for equipment not installed on your vehicle.
+
+All specifications are subject to change without notice. At the time of printing, the latest product information available has been included. We reserve the right to make changes at any time without notice.
+
+Depending on specifications, the vehicle shown in the illustrations may differ from your vehicle in terms of equipment.
+
+■ Accessories, spare parts and modification of your Toyota
+
+Both genuine Toyota and a wide variety of other spare parts and accessories for Toyota vehicles are currently available on the market. Should it be determined that any of the genuine Toyota parts or accessories supplied with your Toyota vehicle or subsequently installed on your Toyota vehicle are defective in material or workmanship, such defective parts or accessories of matching quality can also be used. Toyota cannot accept any liability or responsibility arising out of the use of other than genuine Toyota parts or accessories, or improperly installed parts or accessories. Damage or performance problems resulting from the use of non-genuine Toyota spare parts or accessories may not be covered under warranty.
+
+================================================================================
+PAGE 25: RF-Transmitter Installation and Vehicle Scrapping
+--------------------------------------------------------------------------------
+■ Installation of an RF-transmitter system
+
+As the installation of an RF-transmitter system in your vehicle could affect electronic systems such as the multiport fuel injection system/sequential multiport fuel injection system, cruise control system, anti-lock brake system and seat belt pretensioner system, be sure to check with any authorized Toyota dealer or repairer, or another duly qualified and equipped professional before any authorized Toyota dealer or repairer, or another duly qualified and equipped professional.
+
+Further information regarding frequency bands, power levels, antenna position and conditions of use of RF transmitters, is available on request at any authorized Toyota dealer or repairer, or another duly qualified and equipped professional.
+
+■ Scrapping of your Toyota
+
+The SRS airbags and seat belt pretensioner device in your Toyota contain explosive chemicals. If the vehicle is scrapped with the airbags and seat belt pretensioners left as they are, this may cause an accident such as fire. Be sure to have the systems of the SRS airbags and seat belt pretensioner removed and disposed of by a qualified service shop or by any authorized Toyota dealer or repairer, or another duly qualified and equipped professional, before you scrap your vehicle.
+
+[ICON: Crossed-out battery symbol]
+Your vehicle contains batteries and/or accumulators. Do not discard them into the environment, but cooperate with separate collection (Directive 2006/66/EC).
+
+================================================================================
+PAGE 26: General Safety Precautions
+--------------------------------------------------------------------------------
+▲ CAUTION
+
+■ General precautions while driving
+
+Driving under the influence: Never drive your vehicle when under the influence of any medication that may impair your ability to operate the vehicle. Such medication includes some over-the-counter drugs and some drugs prescribed for colds, hay fever, allergy, and pain relief. Such drugs may contain alcohol, narcotics and other dangerous substances. Alcohol and certain drugs delay reaction time, impair judgment and reduce coordination, which could lead to an accident that could result in death or serious injury.
+
+Defensive driving: Always drive defensively. Anticipate mistakes that other drivers or pedestrians might make and be ready to avoid accidents.
+
+Driver distraction: Always give your full attention to driving. Anything that distracts the driver, such as adjusting controls, talking on a cellular phone or reading, can result in a collision with resulting injury or death to you, your occupants or others.
+
+■ General precaution regarding children's safety
+
+Children may be able to start the vehicle or shift the vehicle into neutral. Children playing with the power windows or other controls may injure themselves or others through operation of the windows, the panoramic roof shade, or other features of the vehicle. In addition, heat build-up or extremely cold temperatures inside the vehicle can be fatal to children.
+
+================================================================================
+PAGE 27: Symbols Used Throughout This Manual
+--------------------------------------------------------------------------------
+Symbols used throughout this manual
+
+■ Cautions & Notices
+
+▲ CAUTION
+
+This is a warning against something which, if ignored, may cause death or serious injury to people. You are informed about what you must or must not do in order to reduce the risk of death or serious injury to yourself and others.
+
+△ NOTICE
+
+This is a warning against something which, if ignored, may cause damage to the vehicle or its equipment. You are informed about what you must or must not do in order to reduce the risk of damage to your vehicle and its equipment.
+
+■ Symbols used in illustrations
+
+Safety symbol
+
+This symbol of a circle with a slash through it means "Do not", "Do not do this", or "Do not let this happen".
+
+Arrows indicating operations
+
+Arrows are used to either indicate pushing, turning, or to be used to describe switches and other devices.
+→ Indicates the outcome of an operation
+(e.g. a lid opens)
+
+================================================================================
+PAGE 28-29: Section 1 - Before Driving - Table of Contents
+--------------------------------------------------------------------------------
+Before driving    1
+
+1-1. Key information
+Keys.................................................. 30
+
+1-2. Opening, closing and locking the doors and trunk
+Doors................................................ 34
+Wireless remote control.................... 35
+Trunk................................................ 43
+Back door.......................................... 64
+
+1-3. Adjustable components
+(seats, mirrors, steering wheel)....... 69
+Rear seats........................................ 70
+Head restraints................................ 72
+Seat belts......................................... 76
+Steering wheel................................. 84
+Anti-glare inside rear
+view mirror....................................... 85
+Outside rear view mirrors................ 86
+
+1-4. Opening and closing the windows
+Power windows................................ 90
+
+1-5. Refueling
+Opening the fuel tank
+cap................................................... 93
+
+1-6. Theft deterrent system
+Engine immobilizer
+system............................................. 97
+Airbag locking system................... 100
+Alarm.............................................. 102
+
+1-7. Safety information
+Correct driving posture................. 110
+SRS airbags................................... 112
+Airbag manual on-off
+switch............................................ 123
+Child restraint systems................. 126
+Installing child
+restraints....................................... 128
+
+================================================================================
+PAGE 30: 1-1. Key Information - Keys
+--------------------------------------------------------------------------------
+The following keys are provided with the vehicle.
+
+Vehicles without a smart entry & start system (type A)
+1 Key (with a wireless remote control function)
+2 Key (without a wireless remote control function)
+3 Key number plate
+
+Vehicles without a smart entry & start system (type B)
+1 Keys
+2 Key (with a wireless remote control function)
+3 Key number plate
+
+Vehicles with a smart entry & start system
+1 Electronic keys
+- Operating the smart entry & start system (→P. 33)
+- Operating the wireless remote control function (→P. 53)
+2 Mechanical keys
+3 Key number plate
+
+================================================================================
+PAGE 31: Using Mechanical Key and Key Precautions
+--------------------------------------------------------------------------------
+1-1. Key information
+
+■ Using the mechanical key (vehicles with a smart entry & start system)
+
+To take out the mechanical key, slide the release button and take the key out.
+After using the mechanical key, store it in the electronic key. Carry the mechanical key together with the electronic key. If the key battery is depleted or the entry function does not operate properly, you will need the mechanical key (→P. 484).
+
+■ Key number plate
+
+Keep the plate in a safe place such as your wallet, not in the vehicle. In the event that the key is lost, a new key can only be made by any authorized Toyota dealer or repairer... using the key number plate.
+
+■ When riding in an aircraft
+
+When bringing a key with wireless remote control function onto an aircraft, make sure you do not press any buttons on the key while inside the aircraft cabin. ... Pressing a button may cause the key to emit radio waves that could interfere with the operation of the aircraft.
+
+================================================================================
+PAGE 32: Key Damage Prevention and Key-Related Notices
+--------------------------------------------------------------------------------
+1-1. Key information
+
+△ NOTICE
+
+■ To prevent key damage
+- Do not drop the keys, subject them to strong shocks or bend them
+- Do not expose the keys to high temperatures for a long period of time
+- Do not get the keys wet or wash them in an ultrasonic washer etc.
+- Vehicles with a smart entry & start system: Do not attach metallic or magnetic materials to the keys...
+- Do not disassemble the keys
+- Do not attach a sticker or anything else to the surface of the key
+
+■ Carrying the electronic key on your person (vehicles with a smart entry & start system)
+
+Carry the electronic key 10 cm (3.9 in.) or more away from electric appliances that are turned on.
+
+■ In case of a smart entry & start system malfunction or other key-related issues
+
+Take your vehicle with all the electronic keys provided... to any authorized Toyota dealer...
+
+■ When a vehicle key is lost (vehicles with a smart entry & start system)
+
+If the key remains lost, the risk of vehicle theft increases significantly. Visit any authorized Toyota dealer... immediately with all remaining electronic keys...
+
+================================================================================
+PAGE 33: 1-2. Smart Entry & Start System
+--------------------------------------------------------------------------------
+1-2. Opening, closing and locking the doors
+Smart entry & start system*
+
+The following operations can be performed simply by carrying the electronic key on your person...
+1 Unlocks and locks the side doors (→P. 34)
+2 Unlocks and locks the back door (→P. 35)
+3 Starts the engine (→P. 164)
+
+* If equipped
+
+================================================================================
+PAGE 34: Unlocking and Locking Side Doors
+--------------------------------------------------------------------------------
+1-2. Opening, closing and locking the doors
+
+■ Unlocking and locking the side doors (front door handles only)
+
+Grip the handle to unlock the doors.
+Make sure to touch the sensor on the back of the handle.
+The doors cannot be unlocked for 3 seconds after the doors are locked.
+
+Touch the lock sensor (the indentation on the top of the door handle) to lock the doors.
+
+================================================================================
+PAGE 35: Unlocking and Locking Back Door
+--------------------------------------------------------------------------------
+1-2. Opening, closing and locking the doors
+
+■ Unlocking and locking the back door
+
+Press the button to unlock the door.
+The door cannot be unlocked for 3 seconds after the door is locked.
+
+Press the button to lock the door.
+
+================================================================================
+PAGE 36: Antenna Location and Effective Range
+--------------------------------------------------------------------------------
+1-2. Opening, closing and locking the doors
+
+■ Antenna location and effective range
+● Antenna location
+1 Antennas outside the cabin
+2 Antennas inside the cabin
+3 Antenna outside the luggage compartment
+
+================================================================================
+PAGE 37: Effective Range
+--------------------------------------------------------------------------------
+1-2. Opening, closing and locking the doors
+
+■ Effective range (areas within which the electronic key is detected)
+
+1 When locking or unlocking the doors
+The system can be operated when the electronic key is within approximately 70 cm (2.3 ft.) of either of the outside front door handles and back door...
+
+2 When starting the engine or changing "ENGINE START STOP" switch modes
+The system can be operated when the electronic key is inside the vehicle.
+
+================================================================================
+PAGE 38: Operation Signals and Alarms
+--------------------------------------------------------------------------------
+1-2. Opening, closing and locking the doors
+
+■ Operation signals
+The emergency flashers flash to indicate that the doors have been locked/unlocked.
+
+■ When the door cannot be locked by the lock sensor
+Use your palm to touch the lock sensor.
+
+■ Alarms and warning indicators
+A combination of exterior and interior alarms as well as warning lights are used...
+
+================================================================================
+PAGE 39: Alarm Table
+--------------------------------------------------------------------------------
+1-2. Opening, closing and locking the doors
+
+[Alarm situations and correction procedures Table]
+
+| Alarm | Situation | Correction procedure |
+| :-- | :-- | :-- |
+| Exterior alarm (sounds once for 10 seconds) | An attempt was made to lock the doors using the lock sensor while the electronic key was left inside the vehicle | Retrieve the electronic key from the vehicle and lock the doors again |
+| | An attempt was made to lock the vehicle while a door was open | Close all of the doors and lock the doors again |
+| | ... (other situations) | ... |
+| Interior alarm (sounds continuously) | The "ENGINE START STOP" switch was turned to ACCESSORY mode while the driver's door was open... | Turn the "ENGINE START STOP" switch off and close the driver's door |
+
+================================================================================
+PAGE 40-41: Alarm Continuation and Security Features
+--------------------------------------------------------------------------------
+1-2. Opening, closing and locking the doors
+
+[Alarm situations and correction procedures Table (cont.)]
+
+| Alarm | Situation | Correction procedure |
+| :-- | :-- | :-- |
+| Interior alarm (sounds continuously)* | The driver's door was opened while the shift lever was in a position other than P... | Shift the shift lever to P. |
+
+* Vehicles with a Multidrive only
+
+■ Security feature
+If a door is not opened within approximately 30 seconds after the vehicle is unlocked, the security feature automatically locks the vehicle again.
+
+■ Battery-saving function
+... If the vehicle has not been used for 5 days or longer, the smart entry & start system will be activated only when: ...
+... If the smart entry & start system has not been used for 14 days or longer, the doors cannot be unlocked at any doors except the driver's door.
+
+■ Conditions affecting operation
+The smart entry & start system uses weak radio waves. In the following situations, the communication... may be affected:
+● When the electronic key battery is depleted
+● Near a TV tower, electric power plant, gas station, radio station, large display, airport...
+● When the electronic key is in contact with... metallic objects:
+- Cards to which aluminum foil is attached
+- Cigarette boxes that have aluminum foil inside
+- Metallic wallets or bags
+- Coins
+- Hand warmers made of metal
+- Media such as CDs and DVDs
+● When other wireless key that emits radio waves is being used nearby
+● When carrying the electronic key together with... devices that emit radio waves:
+- A portable radio, cellular phone, cordless phone...
+- Another vehicle's electronic key...
+- Personal computers or personal digital assistants (PDAs)
+- Digital audio players
+- Portable game systems
+● When the windows are tinted or metallic objects are attached to the rear window
+● When the electronic key is placed near a battery charger or electronic devices
+
+================================================================================
+PAGE 42: Notes for the Entry Function
+--------------------------------------------------------------------------------
+1-2. Opening, closing and locking the doors
+
+■ Notes for the entry function
+● Even when the electronic key is within the effective range (detection areas), the system may not operate properly in the following cases:
+- The electronic key is too close to the window or outside door handle, near the ground, or in a high place...
+- The electronic key is on the instrument panel, luggage cover... or floor, or in the door pockets or glove box when the engine is started...
+● Do not leave the electronic key on top of the instrument panel or near the door pockets when exiting the vehicle.
+● If the electronic key is within the effective range, the doors may be locked or unlocked by anyone.
+● Even if the electronic key is not inside the vehicle, it may be possible to start the engine if the electronic key is near the window.
+● The doors may unlock if a large amount of water splashes on the door handle, such as in a car wash...
+● If the wireless remote control is used to lock the doors when the electronic key is near the vehicle, there is a possibility that the door may not unlock when the door handle is held.
+● A sudden approach to the effective range or door handle may prevent the doors from being unlocked.
+
+================================================================================
+PAGE 43: Additional Notes and Cautions
+--------------------------------------------------------------------------------
+1-2. Opening, closing and locking the doors
+
+● If the smart entry & start system does not operate properly, unlock or lock the doors using the mechanical key (→P. 484)
+- Starting the engine →P. 450
+
+■ Electronic key battery depletion
+● The standard battery life is 1 to 2 years.
+● If the battery becomes low, an alarm will sound in the cabin...
+● ...The following symptoms indicate that the electronic key battery may be depleted. Replace the battery when necessary. (→P. 391)
+- The smart entry & start system or the wireless remote control does not operate.
+- The detection area becomes smaller.
+- The key indicator light on the key surface does not turn on.
+● To avoid serious deterioration, do not leave the electronic key within 1 m (3 ft.) of... electrical appliances that produce a magnetic field:
+- TVs
+- Personal computers
+- Cellular phones, cordless phones and battery chargers
+- Table lamps
+- Induction cookers
+
+▲ CAUTION
+■ Caution regarding the key and vehicle operation (vehicles with a smart entry & start system)
+...Never place a floor mat under the brake and accelerator pedals.
+
+△ NOTICE
+■ To prevent key damage (vehicles with a smart entry & start system)
+● Do not leave the key in any of the following locations:
+- Where temperatures may exceed 50°C (122°F), such as on top of the dashboard or bonnet
+- Where it will be exposed to direct sunlight
+■ To operate the system properly
+...Do not get the electronic key too close to the vehicle when operating the system from outside the vehicle.
+
+================================================================================
+PAGE 44: Alarm and System Operation
+--------------------------------------------------------------------------------
+1-2. Opening, closing and locking the doors
+
+■ Alarm (vehicles with an alarm)
+When the smart entry & start system is... lock the doors will set the alarm system. (→P. 107)
+
+■ To operate the system properly
+...Make sure to carry the electronic key when operating the system.
+
+■ If the smart entry & start system does not operate properly
+- Locking and unlocking the doors using the mechanical key (→P. 484)
+- Starting the engine →P. 450
+
+■ Electronic key battery depletion
+● The standard battery life is 1 to 2 years.
+● If the battery becomes low, an alarm will sound in the cabin...
+● ...The following symptoms indicate that the electronic key battery may be depleted. Replace the battery when necessary. (→P. 391)
+- The smart entry & start system or the wireless remote control does not operate.
+- The detection area becomes smaller.
+- The key indicator light on the key surface does not turn on.
+● To avoid serious deterioration, do not leave the electronic key within 1 m (3 ft.) of... electrical appliances...
+- Personal computers
+- Cellular phones, cordless phones and battery chargers
+- Table lamps
+- Induction cookers
+- Glass top ranges
+- Table lamps
+
+================================================================================
+PAGE 45: Battery Depletion and System Notes (continued)
+--------------------------------------------------------------------------------
+1-2. Opening, closing and locking the doors
+
+■ When the electronic key battery is fully depleted
+→P. 393
+
+■ If the smart entry & start system has been deactivated in a customized setting
+● Locking and unlocking the doors: Use the wireless remote control or mechanical key. (→P. 53, 484)
+● Changing "ENGINE START STOP" switch modes →P. 462
+● Stopping the engine →P. 167
+
+■ Customization
+Some functions can be customized. Contact any authorized Toyota dealer...
+(Customizable features →P. 528)
+
+================================================================================
+PAGE 46: Certification for the Smart Entry & Start System
+--------------------------------------------------------------------------------
+1-2. Opening, closing and locking the doors
+
+■ Certification for the smart entry & start system
+TOYOTA
+TOYOTA MOTOR CORPORATION
+In compliance with the listed radio equipment
+- 2014/53/EU
+- R&TTE
+
+■ R&TTE Declaration of Conformity
+We,
+Manufacturer's Name: TOYOTA/AISIN CORPORATION
+...declare under our sole responsibility that the product:
+Product Name: E2 Oscillator
+Product Model: TM3P53-1
+...is in conformity with essential requirements set out in the R&TTE Directive (1999/5/EC).
+
+================================================================================
+PAGE 47: Legal Information in Multiple Languages
+--------------------------------------------------------------------------------
+1-2. Opening, closing and locking the doors
+
+Hereby, Toyota Motor Corporation declares that the TM-F53-1 is in compliance with the essential requirements and other relevant provisions of Directive 1999/5/EC.
+
+(Declarations repeated in Finnish, Dutch, French, German, Danish, Swedish, and Greek)
+
+================================================================================
+END OF EXTRACTED INFORMATION (Pages 24-47)
+================================================================================
