@@ -3,6 +3,8 @@ docs/private/
 
 # Virtual environment
 .venv/
+venv/
+env/
 
 # Environment variables
 .env
@@ -10,5 +12,21 @@ docs/private/
 # IDE files
 .idea/
 .vscode/
+.cursor/
 
-.gitignore
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Data files (keep structure, ignore content)
+data/db/*.db
+data/db/*.db-journal
+data/vdb/*.idx
+data/vdb/*.pkl
+
+# OS
+.DS_Store
+Thumbs.db
