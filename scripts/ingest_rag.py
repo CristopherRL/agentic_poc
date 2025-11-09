@@ -2,31 +2,22 @@ from __future__ import annotations
 
 import logging
 import re
+import shutil
 from pathlib import Path
 from typing import Iterable
-
 from langchain.schema import Document
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.vectorstores import FAISS
 from langchain_openai import OpenAIEmbeddings
-
 from src.app.config import settings
 
-
 LOGGER = logging.getLogger(__name__)
-
-PROJ_ROOT = Path(__file__).resolve().parents[1]
-DOCS_DIR = PROJ_ROOT / "docs" / "public" / "docs"
-VDB_DIR = PROJ_ROOT / "data" / "vdb"
-INDEX_NAME = "faiss_index"
 SUPPORTED_SUFFIXES = {".pdf", ".txt"}
-
 
 def iter_source_files(base_dir: Path) -> list[Path]:
     return sorted(
         path for path in base_dir.rglob("*") if path.is_file() and path.suffix.lower() in SUPPORTED_SUFFIXES
     )
-
 
 def split_manual_text(raw_text: str) -> list[str]:
     lines = raw_text.splitlines()
@@ -56,12 +47,11 @@ def split_manual_text(raw_text: str) -> list[str]:
 
     return ["\n".join(chunk).strip() for chunk in chunks if any(value.strip() for value in chunk)]
 
-
 def load_documents(source_paths: Iterable[Path]) -> list[Document]:
     documents: list[Document] = []
 
     for path in source_paths:
-        rel_path = path.relative_to(PROJ_ROOT)
+        rel_path = path.relative_to(settings.project_root)
         suffix = path.suffix.lower()
         LOGGER.info("Loading %s", rel_path)
 
@@ -89,25 +79,29 @@ def load_documents(source_paths: Iterable[Path]) -> list[Document]:
 
     return documents
 
-
-def build_vector_store(documents: list[Document]):
+def build_vector_store(documents: list[Document]) -> FAISS:
     embeddings = OpenAIEmbeddings(api_key=settings.openai_api_key)
     return FAISS.from_documents(documents, embeddings)
 
-
-def persist_vector_store(store: FAISS, target_dir: Path) -> None:
-    target_dir.mkdir(parents=True, exist_ok=True)
-    store.save_local(str(target_dir / INDEX_NAME))
+def persist_vector_store(store: FAISS, index_dir: Path | None = None) -> None:
+    target_dir = index_dir or settings.faiss_index_dir
+    target_dir.parent.mkdir(parents=True, exist_ok=True)
+    store.save_local(str(target_dir))
     LOGGER.info("FAISS index saved to %s", target_dir)
 
+def reset_vector_store(index_dir: Path | None = None) -> None:
+    target_dir = index_dir or settings.faiss_index_dir
+    if target_dir.exists():
+        shutil.rmtree(target_dir)
+        LOGGER.info("Removed existing FAISS index at %s", target_dir)
 
-def ingest() -> None:
-    source_paths = iter_source_files(DOCS_DIR)
+def ingest(docs_dir: Path | None = None, index_dir: Path | None = None) -> None:
+    source_dir = docs_dir or settings.docs_dir
+    source_paths = iter_source_files(source_dir)
     documents = load_documents(source_paths)
     LOGGER.info("Prepared %d documents for indexing", len(documents))
     store = build_vector_store(documents)
-    persist_vector_store(store, VDB_DIR)
-
+    persist_vector_store(store, index_dir=index_dir)
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")

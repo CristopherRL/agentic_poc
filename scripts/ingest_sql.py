@@ -1,18 +1,11 @@
 from __future__ import annotations
-
 import logging
 from pathlib import Path
-
 import pandas as pd
 from sqlalchemy import create_engine
-
+from src.app.config import settings
 
 LOGGER = logging.getLogger(__name__)
-
-PROJ_ROOT = Path(__file__).resolve().parents[1]
-CSV_DIR = PROJ_ROOT/"docs"/"public"/"data"
-DB_PATH = PROJ_ROOT/"data"/"db"/"app.db"
-
 
 def load_csvs(csv_dir: Path) -> dict[str, pd.DataFrame]:
     frames: dict[str, pd.DataFrame] = {}
@@ -24,7 +17,6 @@ def load_csvs(csv_dir: Path) -> dict[str, pd.DataFrame]:
         raise FileNotFoundError(f"No CSV files found in {csv_dir}")
     return frames
 
-
 def persist_frames(frames: dict[str, pd.DataFrame], db_path: Path) -> None:
     db_path.parent.mkdir(parents=True, exist_ok=True)
     engine = create_engine(f"sqlite:///{db_path}")
@@ -35,12 +27,18 @@ def persist_frames(frames: dict[str, pd.DataFrame], db_path: Path) -> None:
     finally:
         engine.dispose()
 
+def reset_database(db_path: Path | None = None) -> None:
+    target = db_path or settings.sqlite_path
+    if target.exists():
+        target.unlink()
+        LOGGER.info("Removed existing database at %s", target)
 
-def ingest() -> None:
-    frames = load_csvs(CSV_DIR)
-    persist_frames(frames, DB_PATH)
-    LOGGER.info("SQLite database written to %s", DB_PATH)
-
+def ingest(csv_dir: Path | None = None, db_path: Path | None = None) -> None:
+    source_dir = csv_dir or settings.csv_dir
+    target_db = db_path or settings.sqlite_path
+    frames = load_csvs(source_dir)
+    persist_frames(frames, target_db)
+    LOGGER.info("SQLite database written to %s", target_db)
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
