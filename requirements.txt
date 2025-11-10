@@ -10,4 +10,4 @@ pandas
 SQLAlchemy
 faiss-cpu
 pypdf
-
+pytest
