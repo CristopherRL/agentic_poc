@@ -1,3 +1,4 @@
+.gitignore
 # Private files
 docs/private/
 
@@ -22,10 +23,7 @@ __pycache__/
 .Python
 
 # Data files (keep structure, ignore content)
-data/db/*.db
-data/db/*.db-journal
-data/vdb/*.idx
-data/vdb/*.pkl
+*desktop.ini
 
 # OS
 .DS_Store
