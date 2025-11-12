@@ -136,15 +136,14 @@ Agent that answers natural-language questions by choosing between SQL analytics,
 
 ## 9. Technical Debt & Follow-up Items
 
-
-
-1. **Managed persistence:** migrate SQLite → Postgres/Snowflake; FAISS → managed vector store (Azure AI Search, Pinecone) for scale & concurrency.
-2. **Automated manual ingestion:** replace manual TXT extraction with Playwright/puppeteer crawler or official API; address licensing.
-3. **Secrets & security:** move `.env` into a vault (Azure Key Vault), enforce least-privilege DB roles, add request auth.
-4. **Observability & LLMOps:** add structured logging, tracing, and LangSmith instrumentation for prompt cost/drift monitoring.
-5. **CI/CD:** GitHub Actions or Azure DevOps pipeline running lint/tests/docker build on push.
-6. **LangGraph migration:** upgrade planner to LangGraph for explicit state management, retries, and better guardrails.
-7. **Stakeholder interface:** wrap the API with a lightweight UI (Streamlit/Gradio) for demos and workshops.
+1. **Conversation memory:** implement short-term memory management within the same conversation session (e.g., LangChain `ConversationBufferMemory` or custom session store) to enable contextual follow-up questions and maintain conversation state across multiple API calls.
+2. **Managed persistence:** migrate SQLite → Postgres/Snowflake; FAISS → managed vector store (Azure AI Search, Pinecone) for scale & concurrency.
+3. **Automated manual ingestion:** replace manual TXT extraction with Playwright/puppeteer crawler or official API; address licensing.
+4. **Secrets & security:** move `.env` into a vault (Azure Key Vault), enforce least-privilege DB roles, add request auth.
+5. **Observability & LLMOps:** add structured logging, tracing, and LangSmith instrumentation for prompt cost/drift monitoring.
+6. **CI/CD:** GitHub Actions or Azure DevOps pipeline running lint/tests/docker build on push.
+7. **LangGraph migration:** upgrade planner to LangGraph for explicit state management, retries, and better guardrails.
+8. **Stakeholder interface:** wrap the API with a lightweight UI (Streamlit/Gradio) for demos and workshops.
 
 These items are documented to guide next-phase investment and client advisory discussions.
 
