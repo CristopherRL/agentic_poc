@@ -22,8 +22,11 @@ __pycache__/
 *.so
 .Python
 
-# Data files (keep structure, ignore content)
-*desktop.ini
+# Windows system files
+desktop.ini
+**/desktop.ini
+Thumbs.db
+**/Thumbs.db
 
 # OS
 .DS_Store
