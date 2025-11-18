@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from functools import partial
+
+from anyio import to_thread
 from fastapi import APIRouter, HTTPException
 
 from src.app.api.schemas import AskRequest, AskResponse, Citation
@@ -9,9 +12,11 @@ router = APIRouter(prefix="/api/v1")
 
 
 @router.post("/ask", response_model=AskResponse)
-def ask_question(payload: AskRequest) -> AskResponse:
+async def ask_question(payload: AskRequest) -> AskResponse:
     try:
-        agent_result = run_agent(payload.question, include_intermediate_steps=True)
+        agent_result = await to_thread.run_sync(
+            partial(run_agent, payload.question, include_intermediate_steps=True)
+        )
     except Exception as exc:  # pragma: no cover - defensive guard
         raise HTTPException(status_code=500, detail="Agent execution failed") from exc
 
