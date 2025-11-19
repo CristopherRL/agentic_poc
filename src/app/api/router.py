@@ -12,6 +12,22 @@ router = APIRouter(prefix="/api/v1")
 
 @router.post("/ask", response_model=AskResponse)
 async def ask_question(payload: AskRequest) -> AskResponse:
+    """
+    Handle an ask request by running the agent on the provided question and returning structured results.
+    
+    Parameters:
+        payload (AskRequest): Request payload containing the user's question.
+    
+    Returns:
+        AskResponse: Result object with:
+            - answer: final textual answer (empty string if none),
+            - sql_query: optional SQL query produced by the agent,
+            - citations: list of Citation objects with `source_document`, `page`, and `content`,
+            - tool_trace: list of strings representing intermediate tool outputs.
+    
+    Raises:
+        HTTPException: with status code 500 and detail "Agent execution failed" if the agent execution fails.
+    """
     try:
         agent_result = await asyncio.to_thread(
             run_agent, payload.question, include_intermediate_steps=True
