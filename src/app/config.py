@@ -102,6 +102,34 @@ def _default_doc_keywords() -> list[str]:
         "procedure",
     ]
 
+# Define question max length (for input validation)
+def _default_question_max_length() -> int:
+    """
+    Maximum allowed length for user questions.
+    Used to prevent DoS attacks via extremely long input strings.
+    """
+    return 2000
+
+# Define dangerous SQL keywords (for security validation)
+def _default_dangerous_sql_keywords() -> list[str]:
+    """
+    List of SQL keywords that are forbidden in generated queries.
+    Used for security validation in both input validation (schemas) and SQL query validation (agent).
+    """
+    return [
+        "DROP",
+        "DELETE",
+        "UPDATE",
+        "INSERT",
+        "ALTER",
+        "CREATE",
+        "TRUNCATE",
+        "EXEC",
+        "EXECUTE",
+        "MERGE",
+        "REPLACE",
+    ]
+
 # Define Route system prompt to determine the type of data required
 def _default_route_system_prompt() -> str:
     return (
@@ -212,7 +240,30 @@ def _default_hybrid_split_user_prompt() -> str:
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+    """
+    Application settings with environment-agnostic configuration.
+    
+    Configuration precedence (highest to lowest):
+    1. Environment variables (system/env) - Used in cloud/production
+    2. .env file (if exists) - Used in local development
+    3. Default values (default_factory) - Fallback defaults
+    
+    This design allows the same code to work in:
+    - Local development: Uses .env file
+    - Cloud deployments: Uses environment variables/secrets (Azure Key Vault, AWS Secrets Manager, etc.)
+    
+    Example cloud deployment:
+    - Set OPENAI_API_KEY as environment variable or secret
+    - Set QUESTION_MAX_LENGTH as environment variable
+    - .env file is ignored in cloud (or can be omitted)
+    """
+    model_config = SettingsConfigDict(
+        env_file=".env",  # Optional: only used if file exists (local dev)
+        env_file_encoding="utf-8",
+        extra="ignore",
+        # Note: env_file is optional - if .env doesn't exist, it's silently ignored
+        # Environment variables always take precedence over .env file
+    )
 
     # Secrets / credentials
     openai_api_key: str = Field(validation_alias=AliasChoices("openai_api_key", "open_api_key"))
@@ -244,6 +295,10 @@ class Settings(BaseSettings):
     sql_keywords: list[str] = Field(default_factory=_default_sql_keywords)
     doc_keywords: list[str] = Field(default_factory=_default_doc_keywords)
     table_comments: dict[str, str] = Field(default_factory=_default_table_comments)
+    
+    # Security settings
+    question_max_length: int = Field(default_factory=_default_question_max_length)
+    dangerous_sql_keywords: list[str] = Field(default_factory=_default_dangerous_sql_keywords)
 
     # Prompt templates
     rag_system_prompt: str = Field(default_factory=_default_rag_system_prompt)

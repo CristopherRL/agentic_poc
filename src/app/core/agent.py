@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import json
 import re
 from functools import lru_cache
@@ -20,6 +21,44 @@ SQL_TOOL_NAME = "sales_analytics"
 
 SQL_KEYWORDS = tuple(settings.sql_keywords)
 DOC_KEYWORDS = tuple(settings.doc_keywords)
+
+#-------- Security functions --------
+# SQL Query Validation
+def _validate_sql_query(sql_query: str) -> tuple[bool, str]:
+    """
+    Validate SQL query to ensure it only contains SELECT operations.
+    
+    Uses centralized dangerous_sql_keywords from settings (shared with input validation in schemas.py).
+    
+    Returns:
+        tuple[bool, str]: (is_valid, error_message)
+        - is_valid: True if query is safe to execute, False otherwise
+        - error_message: Error description if query is invalid, empty string if valid
+    """
+    if not sql_query or not sql_query.strip():
+        return False, "SQL query cannot be empty"
+    
+    # Normalize query for analysis (uppercase, remove extra whitespace)
+    normalized = re.sub(r'\s+', ' ', sql_query.upper().strip())
+    
+    # Block DML/DDL operations using centralized keywords list from settings
+    # This list is shared with schemas.py for input validation (defense in depth)
+    for keyword in settings.dangerous_sql_keywords:
+        # Check for keyword as a complete word (not part of another word)
+        pattern = r'\b' + re.escape(keyword) + r'\b'
+        if re.search(pattern, normalized):
+            return False, f"SQL query contains forbidden operation: {keyword}"
+    
+    # Ensure query starts with SELECT (after removing leading comments/whitespace)
+    # Remove SQL comments first
+    normalized_no_comments = re.sub(r'--.*?$', '', normalized, flags=re.MULTILINE)
+    normalized_no_comments = re.sub(r'/\*.*?\*/', '', normalized_no_comments, flags=re.DOTALL)
+    normalized_no_comments = normalized_no_comments.strip()
+    
+    if not normalized_no_comments.startswith('SELECT'):
+        return False, "SQL query must be a SELECT statement only"
+    
+    return True, ""
 
 #-------- Helper functions --------
 # Stringify - For serializing tool output
@@ -77,16 +116,17 @@ def _get_rag_synthesis_prompt() -> ChatPromptTemplate:
     )
 
 # Run RAG pipeline
-def _run_rag_pipeline(question: str, include_intermediate_steps: bool) -> Dict[str, Any]:
+async def _run_rag_pipeline(question: str, include_intermediate_steps: bool) -> Dict[str, Any]:
     store = load_vector_store()
-    docs = store.similarity_search(question, k=settings.rag_top_k)
+    # FAISS similarity_search is synchronous, run in thread pool
+    docs = await asyncio.to_thread(store.similarity_search, question, k=settings.rag_top_k)
     citations = _build_citations(docs)
     context = _format_docs_for_prompt(docs) if docs else ""
 
     synthesis_prompt = _get_rag_synthesis_prompt()
     messages = synthesis_prompt.format_prompt(question=question, context=context or "<no relevant context>").to_messages()
     synthesis_llm = get_synthesis_llm()
-    answer_message = synthesis_llm.invoke(messages)
+    answer_message = await synthesis_llm.ainvoke(messages)
     answer = (answer_message.content or "").strip()
 
     tool_output = json.dumps(citations, ensure_ascii=False)
@@ -138,18 +178,20 @@ def _get_sql_generation_prompt() -> ChatPromptTemplate:
 
 
 # Run SQL pipeline
-def _run_sql_pipeline(question: str, include_intermediate_steps: bool) -> Dict[str, Any]:
+async def _run_sql_pipeline(question: str, include_intermediate_steps: bool) -> Dict[str, Any]:
     db = get_sql_database()
 
     schema_path = settings.sql_schema_path
     if schema_path.exists():
-        schema = schema_path.read_text(encoding="utf-8")
+        # File I/O is synchronous, run in thread pool
+        schema = await asyncio.to_thread(schema_path.read_text, encoding="utf-8")
     else:
-        schema = db.get_table_info()
+        # Database get_table_info is synchronous, run in thread pool
+        schema = await asyncio.to_thread(db.get_table_info)
 
     gen_prompt = _get_sql_generation_prompt()
     messages = gen_prompt.format_prompt(question=question, schema=schema).to_messages()
-    sql_generation_response = get_sql_llm().invoke(messages)
+    sql_generation_response = await get_sql_llm().ainvoke(messages)
     generated_sql = (sql_generation_response.content or "").strip()
 
     if generated_sql.startswith("```"):
@@ -165,21 +207,32 @@ def _run_sql_pipeline(question: str, include_intermediate_steps: bool) -> Dict[s
         {"tool": "sql_generation", "input": question, "output": generated_sql}
     )
 
-    rows_repr = ""
-    try:
-        rows = db.run(generated_sql)
-        rows_repr = rows if isinstance(rows, str) else json.dumps(rows, ensure_ascii=False)
-        tool_trace.append(f"SQL execution output: {rows_repr[:200]}")
-        intermediate_steps.append(
-            {"tool": "sql_execution", "input": generated_sql, "output": rows_repr}
-        )
-    except Exception as exc:  # pragma: no cover - defensive guard
-        error_message = f"SQL execution failed: {exc}"
+    # Validate SQL query before execution
+    is_valid, validation_error = _validate_sql_query(generated_sql)
+    if not is_valid:
+        error_message = f"SQL query validation failed: {validation_error}"
         tool_trace.append(error_message)
         intermediate_steps.append(
-            {"tool": "sql_execution", "input": generated_sql, "output": error_message}
+            {"tool": "sql_validation", "input": generated_sql, "output": error_message}
         )
         rows_repr = error_message
+    else:
+        rows_repr = ""
+        try:
+            # Database run is synchronous, run in thread pool
+            rows = await asyncio.to_thread(db.run, generated_sql)
+            rows_repr = rows if isinstance(rows, str) else json.dumps(rows, ensure_ascii=False)
+            tool_trace.append(f"SQL execution output: {rows_repr[:200]}")
+            intermediate_steps.append(
+                {"tool": "sql_execution", "input": generated_sql, "output": rows_repr}
+            )
+        except Exception as exc:  # pragma: no cover - defensive guard
+            error_message = f"SQL execution failed: {exc}"
+            tool_trace.append(error_message)
+            intermediate_steps.append(
+                {"tool": "sql_execution", "input": generated_sql, "output": error_message}
+            )
+            rows_repr = error_message
 
     synthesis_prompt = _get_sql_synthesis_prompt()
     messages = synthesis_prompt.format_prompt(
@@ -189,7 +242,7 @@ def _run_sql_pipeline(question: str, include_intermediate_steps: bool) -> Dict[s
         raw_answer=rows_repr,
     ).to_messages()
     synthesis_llm = get_synthesis_llm()
-    answer_message = synthesis_llm.invoke(messages)
+    answer_message = await synthesis_llm.ainvoke(messages)
     answer = (answer_message.content or "").strip()
 
     result: Dict[str, Any] = {
@@ -221,13 +274,16 @@ def _get_hybrid_synthesis_prompt() -> ChatPromptTemplate:
     )
 
 # Run hybrid pipeline
-def _run_hybrid_pipeline(question: str, include_intermediate_steps: bool) -> Dict[str, Any]:
-    split_sql_question, split_rag_question = _split_hybrid_question(question)
+async def _run_hybrid_pipeline(question: str, include_intermediate_steps: bool) -> Dict[str, Any]:
+    split_sql_question, split_rag_question = await _split_hybrid_question(question)
     sql_question = split_sql_question or question
     rag_question = split_rag_question or question
 
-    sql_result = _run_sql_pipeline(sql_question, include_intermediate_steps=True)
-    rag_result = _run_rag_pipeline(rag_question, include_intermediate_steps=True)
+    # Execute SQL and RAG pipelines in parallel
+    sql_result, rag_result = await asyncio.gather(
+        _run_sql_pipeline(sql_question, include_intermediate_steps=True),
+        _run_rag_pipeline(rag_question, include_intermediate_steps=True),
+    )
 
     hybrid_prompt = _get_hybrid_synthesis_prompt()
     messages = hybrid_prompt.format_prompt(
@@ -238,7 +294,7 @@ def _run_hybrid_pipeline(question: str, include_intermediate_steps: bool) -> Dic
         document_context=rag_result.get("_context") or "",
     ).to_messages()
     synthesis_llm = get_synthesis_llm()
-    answer_message = synthesis_llm.invoke(messages)
+    answer_message = await synthesis_llm.ainvoke(messages)
     answer = (answer_message.content or "").strip()
 
     tool_trace: List[str] = ["Router decision: HYBRID"]
@@ -274,10 +330,10 @@ def _get_hybrid_split_prompt() -> ChatPromptTemplate:
     )
 
 
-def _split_hybrid_question(question: str) -> tuple[str, str]:
+async def _split_hybrid_question(question: str) -> tuple[str, str]:
     prompt = _get_hybrid_split_prompt()
     messages = prompt.format_prompt(question=question).to_messages()
-    response = get_split_llm().invoke(messages)
+    response = await get_split_llm().ainvoke(messages)
     try:
         payload = json.loads(response.content or "{}")
         sql_q = str(payload.get("sql_question", ""))
@@ -287,10 +343,10 @@ def _split_hybrid_question(question: str) -> tuple[str, str]:
         return "", ""
 
 # Run pipeline agents
-def run_rag_agent(question: str, *, include_intermediate_steps: bool = True) -> Dict[str, Any]:
-    return _run_rag_pipeline(question, include_intermediate_steps)
-def run_sql_agent(question: str, *, include_intermediate_steps: bool = True) -> Dict[str, Any]:
-    return _run_sql_pipeline(question, include_intermediate_steps)
+async def run_rag_agent(question: str, *, include_intermediate_steps: bool = True) -> Dict[str, Any]:
+    return await _run_rag_pipeline(question, include_intermediate_steps)
+async def run_sql_agent(question: str, *, include_intermediate_steps: bool = True) -> Dict[str, Any]:
+    return await _run_sql_pipeline(question, include_intermediate_steps)
 
 # Route prompt
 @lru_cache(maxsize=1)
@@ -317,13 +373,13 @@ def _looks_documentary(question: str) -> bool:
     return any(keyword in lowered for keyword in DOC_KEYWORDS)
 
 # Decide route
-def _decide_route(question: str) -> Optional[str]:
+async def _decide_route(question: str) -> Optional[str]:
     structured = _looks_structured(question)
     documentary = _looks_documentary(question)
 
     llm = get_router_llm()
     prompt = _get_route_prompt()
-    response = llm.invoke(
+    response = await llm.ainvoke(
         prompt.format_prompt(
             question=question,
             structured_hint=str(structured),
@@ -350,17 +406,17 @@ def _decide_route(question: str) -> Optional[str]:
     return None
 
 
-def run_agent(question: str, *, include_intermediate_steps: bool = True) -> Dict[str, Any]:
-    route = _decide_route(question)
+async def run_agent(question: str, *, include_intermediate_steps: bool = True) -> Dict[str, Any]:
+    route = await _decide_route(question)
     # Run decided route
     if route == SQL_ROUTE:
-        sql_result = run_sql_agent(question, include_intermediate_steps=include_intermediate_steps)
+        sql_result = await run_sql_agent(question, include_intermediate_steps=include_intermediate_steps)
         sql_result.setdefault("tool_trace", []).insert(0, "Router decision: SQL")
         return sql_result
     if route == HYBRID_ROUTE:
-        return _run_hybrid_pipeline(question, include_intermediate_steps)
+        return await _run_hybrid_pipeline(question, include_intermediate_steps)
     if route == RAG_ROUTE:
-        rag_result = run_rag_agent(question, include_intermediate_steps=include_intermediate_steps)
+        rag_result = await run_rag_agent(question, include_intermediate_steps=include_intermediate_steps)
         rag_result.setdefault("tool_trace", []).insert(0, "Router decision: RAG")
         return rag_result
     # Fallback to insufficient context

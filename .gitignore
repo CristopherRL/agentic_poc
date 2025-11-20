@@ -31,3 +31,5 @@ Thumbs.db
 # OS
 .DS_Store
 Thumbs.db
+
+_desktop_ini.py

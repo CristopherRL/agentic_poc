@@ -40,7 +40,62 @@ This POC follows a **Modular Monolith** architecture with **Clean Architecture p
 
 ## 2. System Architecture & Data Flows
 
-### 2.1. Offline Data Ingestion Flow
+### 2.1. Architecture Diagram
+
+```mermaid
+graph TB
+    subgraph "User Interface"
+        USER[User - API Client]
+    end
+    
+    subgraph "API Layer (FastAPI)"
+        API[FastAPI Server<br/>async endpoints]
+        VALID[Pydantic Validation<br/>Input sanitization]
+    end
+    
+    subgraph "Core Layer (Business Logic)"
+        AGENT[Agent Orchestrator]
+        ROUTER[Router<br/>LLM-based classification]
+        SQL_TOOL[SQL Tool<br/>Query generation & execution]
+        RAG_TOOL[RAG Tool<br/>Vector search & retrieval]
+    end
+    
+    subgraph "Infrastructure Layer"
+        LLM[OpenAI API<br/>Multi-model strategy]
+        DB[(SQLite Database<br/>app.db)]
+        VDB[FAISS Vector Index<br/>faiss_index/]
+    end
+    
+    subgraph "Data Sources"
+        CSV[CSV Files<br/>docs/public/data/]
+        DOCS[PDFs & Manuals<br/>docs/public/docs/]
+    end
+    
+    USER -->|POST /api/v1/ask| API
+    API --> VALID
+    VALID --> AGENT
+    AGENT --> ROUTER
+    ROUTER -->|SQL route| SQL_TOOL
+    ROUTER -->|RAG route| RAG_TOOL
+    ROUTER -->|Hybrid route| SQL_TOOL
+    ROUTER -->|Hybrid route| RAG_TOOL
+    SQL_TOOL --> DB
+    RAG_TOOL --> VDB
+    SQL_TOOL --> LLM
+    RAG_TOOL --> LLM
+    ROUTER --> LLM
+    AGENT --> LLM
+    CSV -.->|Ingestion| DB
+    DOCS -.->|Ingestion| VDB
+    
+    style API fill:#e1f5ff
+    style AGENT fill:#e8f5e9
+    style LLM fill:#fff3e0
+    style DB fill:#f3e5f5
+    style VDB fill:#f3e5f5
+```
+
+### 2.2. Offline Data Ingestion Flow
 
 **Design Constraint:** The system must operate on pre-ingested data. Users query local data stores, not external APIs, ensuring sub-second response times.
 
@@ -68,49 +123,88 @@ This flow runs **asynchronously** (via manual script execution) to populate our 
 - **SQLite:** Optimized for structured, aggregate queries (COUNT, GROUP BY, JOINs). Indexed for millisecond responses.
 - **FAISS:** Optimized for semantic similarity search. Can't efficiently handle both structured and unstructured queries in a single store.
 
-### 2.2. Online Query Flow (Real-time)
+**Offline Ingestion Flow Diagram:**
 
-This flow describes what happens from the moment a user sends a question to `/api/v1/ask`:
+```mermaid
+graph LR
+    subgraph "Data Sources"
+        CSV[CSV Files<br/>DIM_MODEL, FACT_SALES, etc.]
+        PDF[PDF Contracts<br/>Contract_Toyota_2023.pdf]
+        TXT[Manual TXT Files<br/>Toyota_RAV4.txt]
+    end
+    
+    subgraph "Ingestion Scripts"
+        SQL_SCRIPT[ingest_sql.py<br/>Pandas + SQLAlchemy]
+        RAG_SCRIPT[ingest_rag.py<br/>PyPDFLoader + OpenAI Embeddings]
+    end
+    
+    subgraph "Data Stores"
+        SQLITE[(SQLite DB<br/>app.db)]
+        SCHEMA[sql_schema.md<br/>DDL + samples]
+        FAISS[FAISS Index<br/>faiss_index/]
+    end
+    
+    CSV --> SQL_SCRIPT
+    SQL_SCRIPT --> SQLITE
+    SQL_SCRIPT --> SCHEMA
+    PDF --> RAG_SCRIPT
+    TXT --> RAG_SCRIPT
+    RAG_SCRIPT --> FAISS
+    
+    style SQL_SCRIPT fill:#e8f5e9
+    style RAG_SCRIPT fill:#e8f5e9
+    style SQLITE fill:#f3e5f5
+    style FAISS fill:#f3e5f5
+```
 
-1. **Input:** FastAPI receives `POST /api/v1/ask` with `{"question": "..."}`.
-2. **Validation:** Pydantic `AskRequest` validates the input (non-empty string).
-3. **Route to Core:** `src/app/api/router.py` calls `run_agent(question)` from `src/app/core/agent.py`.
+### 2.3. Online Query Flow (Real-time)
+
+This flow describes what happens from the moment a user sends a question to `/api/v1/ask`. **All operations use async/await patterns for optimal performance and concurrency:**
+
+1. **Input:** FastAPI receives `POST /api/v1/ask` with `{"question": "..."}` via an **async endpoint handler** (`async def ask_question()`).
+2. **Validation:** Pydantic `AskRequest` validates the input with strict constraints (non-empty string, max length, character restrictions, SQL injection prevention).
+3. **Route to Core:** `src/app/api/router.py` calls `await run_agent(question)` from `src/app/core/agent.py` (all agent functions are `async def`).
 4. **Router Decision (`_decide_route`):**
    - **Heuristic hints:** Checks for `settings.sql_keywords` (e.g., "sales", "revenue", "month") and `settings.doc_keywords` (e.g., "manual", "warranty").
-   - **LLM classification:** Uses `router_llm` (default: `gpt-4o-mini`, temperature=0.0) with `settings.route_system_prompt` to classify intent:
+   - **LLM classification:** Uses `router_llm` (default: `gpt-4o-mini`, temperature=0.0) with `settings.route_system_prompt` to classify intent via **async LLM call** (`await router_llm.ainvoke(...)`):
      - `SQL`: Structured analytics query
      - `RAG`: Document/policy lookup
      - `BOTH`: Hybrid question requiring both
      - `NONE`: Insufficient context → returns `settings.insufficient_context_message`
    - **Fallback:** If LLM returns invalid response, falls back to heuristics. If still ambiguous, returns `None` (triggers clarification message).
-5. **Tool Execution:**
+5. **Tool Execution (Fully Async):**
    - **If `SQL`:** 
-     - `_run_sql_pipeline()`:
-       - Reads `data/db/sql_schema.md` for schema context.
-       - Uses `sql_llm` (default: `gpt-4o-mini`) with `settings.sql_generation_system_prompt` and `settings.sql_generation_user_prompt` to generate SQL.
-       - Executes query via LangChain `SQLDatabase.run()` (read-only).
-       - Synthesizes answer using `synthesis_llm` (default: `gpt-4o`, temperature=0.2) with `settings.sql_system_prompt`.
+     - `await _run_sql_pipeline()`:
+       - Reads `data/db/sql_schema.md` for schema context (async file I/O via `asyncio.to_thread()` since file operations are synchronous).
+       - Uses `sql_llm` (default: `gpt-4o-mini`) with `settings.sql_generation_system_prompt` and `settings.sql_generation_user_prompt` to generate SQL (**async LLM call** via `await sql_llm.ainvoke(...)`).
+       - Validates SQL query against security whitelist (blocks DML/DDL operations).
+       - Executes query via **async database operations** (`await asyncio.to_thread(db.run, query)`) - SQLite is synchronous, so it's wrapped in a thread pool to prevent blocking the event loop.
+       - Synthesizes answer using `synthesis_llm` (default: `gpt-4o`, temperature=0.2) with `settings.sql_system_prompt` (**async LLM call** via `await synthesis_llm.ainvoke(...)`).
    - **If `RAG`:**
-     - `_run_rag_pipeline()`:
-       - Loads FAISS index via `load_vector_store()`.
-       - Performs `similarity_search(question, k=settings.rag_top_k)` (default: 4 documents).
+     - `await _run_rag_pipeline()`:
+       - Loads FAISS index via `load_vector_store()` (synchronous operation wrapped with `asyncio.to_thread()`).
+       - Performs `similarity_search(question, k=settings.rag_top_k)` (default: 4 documents) via **async vector search** (`await asyncio.to_thread(store.similarity_search, ...)`) - FAISS is synchronous, so it's wrapped in a thread pool.
        - Formats retrieved docs with source/page metadata.
-       - Synthesizes answer using `synthesis_llm` with `settings.rag_system_prompt`.
+       - Synthesizes answer using `synthesis_llm` with `settings.rag_system_prompt` (**async LLM call** via `await synthesis_llm.ainvoke(...)`).
    - **If `BOTH` (Hybrid):**
-     - `_run_hybrid_pipeline()`:
+     - `await _run_hybrid_pipeline()`:
        - Uses `split_llm` (default: `gpt-4o`, temperature=0.0) with `settings.hybrid_split_system_prompt` to decompose question into:
          - `sql_question`: Structured analytics portion
          - `rag_question`: Document lookup portion
-       - Executes `_run_sql_pipeline(sql_question)` and `_run_rag_pipeline(rag_question)` in parallel (future: async).
+       - Executes `await asyncio.gather(_run_sql_pipeline(sql_question), _run_rag_pipeline(rag_question))` in parallel (async concurrency).
        - Combines SQL results + RAG citations.
-       - Synthesizes unified answer using `synthesis_llm` with `settings.hybrid_system_prompt`.
+       - Synthesizes unified answer using `synthesis_llm` with `settings.hybrid_system_prompt` (async LLM call).
 6. **Response Assembly:**
    - Maps agent output to `AskResponse` schema:
      - `answer`: Natural language response
      - `sql_query`: Generated SQL (if SQL route)
      - `citations`: List of `Citation` objects with `source_document`, `page`, `content` (if RAG route)
      - `tool_trace`: List of strings logging router decision, tool invocations, intermediate steps
-7. **Return:** FastAPI serializes `AskResponse` to JSON and returns to client.
+7. **Error Handling:** If any step fails, appropriate HTTP status codes are returned:
+   - 400 Bad Request for validation errors (with descriptive, non-exposing error messages)
+   - 500 Internal Server Error for unexpected internal errors
+   - 503 Service Unavailable when external dependencies (OpenAI API) are unavailable
+8. **Return:** FastAPI serializes `AskResponse` to JSON and returns to client.
 
 **Key Technical Challenges & Solutions:**
 
@@ -120,6 +214,10 @@ This flow describes what happens from the moment a user sends a question to `/ap
   - **Solution:** Dedicated `split_llm` (`gpt-4o`) with explicit JSON schema (`{"sql_question": "...", "rag_question": "..."}`) and structured prompt.
 - **Challenge 3: Cost Control.** Using `gpt-4o` for every task would be prohibitively expensive.
   - **Solution:** Multi-model strategy (see Section 3.2).
+- **Challenge 4: Async Performance.** Synchronous I/O operations block the event loop, limiting concurrency.
+  - **Solution:** All API endpoints and I/O-bound operations (LLM calls, database queries, vector searches) use async/await patterns. This enables non-blocking I/O and optimal performance under concurrent load.
+- **Challenge 5: SQL Injection Security.** LLM-generated SQL and user input could contain malicious SQL injection attempts.
+  - **Solution:** (1) Input validation and sanitization at the API layer using Pydantic schemas. (2) SQL query validation that blocks DML/DDL operations. (3) Read-only database connections with parameterized queries. (4) Whitelist-based query validation before execution.
 
 ---
 
@@ -133,7 +231,8 @@ This flow describes what happens from the moment a user sends a question to `/ap
 **Web Framework: FastAPI**
 - **Justification:** 
   - High-performance async framework (comparable to Node.js/Go).
-  - Native Pydantic integration for request/response validation.
+  - Native async/await support for non-blocking I/O operations (critical for production-scale systems).
+  - Native Pydantic integration for request/response validation with strict constraints.
   - Automatic OpenAPI (Swagger) documentation.
   - Built-in support for streaming responses (future: SSE for chat UX).
 
@@ -177,14 +276,18 @@ This flow describes what happens from the moment a user sends a question to `/ap
 
 **Structured Store: SQLite**
 - **Justification (POC):**
-  - Zero-configuration, file-based database. Perfect for local development and demos.
-  - SQLAlchemy provides abstraction layer. Migration to Postgres/Snowflake requires only changing the connection string.
+  - **Zero-configuration:** File-based database that requires no server setup or connection configuration. Perfect for local development and demos.
+  - **Easy to use locally:** No need to install, configure, or connect to a separate database server. Simply works out of the box.
+  - **Ideal for POC:** With small datasets, SQLite provides excellent performance without the overhead of managing a database server.
+  - **SQLAlchemy abstraction:** Provides abstraction layer. Migration to Postgres/Snowflake requires only changing the connection string.
   - **Production path:** Migrate to managed Postgres (Azure Database for PostgreSQL) for concurrency and scale.
 
 **Vector Store: FAISS (CPU)**
 - **Justification (POC):**
-  - Local, file-based vector index. No external dependencies.
-  - LangChain wrappers provide consistent API. Migration to Azure AI Search/Pinecone requires only changing the `load_vector_store()` implementation.
+  - **Local and lightweight:** File-based vector index with no external dependencies. No need for a separate vector database service.
+  - **Perfect for small datasets:** With a small number of documents (contracts, manuals), FAISS provides efficient similarity search without infrastructure overhead.
+  - **Ideal for POC:** The amount of data is small, making FAISS the correct choice for a proof-of-concept that needs to run locally.
+  - **LangChain wrappers:** Provides consistent API. Migration to Azure AI Search/Pinecone requires only changing the `load_vector_store()` implementation.
   - **Production path:** Migrate to managed vector store (Azure AI Search) for scale, security, and hybrid search capabilities.
 
 **Why not a single database?**
@@ -204,11 +307,50 @@ All configurable parameters are centralized using `pydantic-settings`:
 - **Routing Heuristics:** `sql_keywords`, `doc_keywords` for hint generation.
 - **Prompts:** All system and user prompts (router, SQL generation, RAG synthesis, hybrid split/synthesis).
 - **Table Comments:** Metadata for SQL schema generation.
+- **Security Settings:** `question_max_length`, `dangerous_sql_keywords`.
+
+**Environment-Agnostic Design:**
+
+The configuration system is designed to work seamlessly across different deployment environments:
+
+**Configuration Precedence (highest to lowest):**
+1. **Environment Variables** (system/env) - Used in cloud/production
+2. **`.env` file** (if exists) - Used in local development
+3. **Default values** (`default_factory`) - Fallback defaults
+
+**Why this approach?**
+- **Local Development:** Use `.env` file for convenience. Git-ignored for security.
+- **Cloud Deployment:** Set environment variables or secrets (Azure Key Vault, AWS Secrets Manager, Kubernetes secrets, etc.). The `.env` file is automatically ignored.
+- **Same Code, Different Environments:** No code changes needed when moving from local to cloud.
+
+**Example Cloud Deployment (Azure Container Apps):**
+```bash
+# Set environment variables directly
+az containerapp update \
+  --name agentic-poc \
+  --resource-group my-rg \
+  --set-env-vars \
+    OPENAI_API_KEY=$OPENAI_KEY \
+    QUESTION_MAX_LENGTH=2000 \
+    ROUTER_LLM_MODEL=gpt-4o-mini
+
+# Or use Azure Key Vault for secrets (recommended)
+az containerapp update \
+  --name agentic-poc \
+  --resource-group my-rg \
+  --secrets \
+    openai-key=keyvaultref:https://my-vault.vault.azure.net/secrets/openai-api-key \
+  --env-vars \
+    OPENAI_API_KEY=secretref:openai-key \
+    QUESTION_MAX_LENGTH=2000
+```
+
+> **📚 Detailed Azure Configuration Guide:** See `docs/public/config/azure-deployment.md` for comprehensive examples including Azure App Service, AKS, Key Vault integration, and Azure DevOps pipelines.
 
 **Why `.env` + `config.py`?**
 - **`.env`:** Stores secrets (API keys) and environment-specific overrides. Git-ignored for security.
 - **`config.py`:** Provides defaults and validation. Ensures type safety and prevents runtime errors.
-- **Override precedence:** `.env` values override `config.py` defaults. Enables per-environment configuration (dev/staging/prod) without code changes.
+- **Environment Variables:** Override both `.env` and defaults. Enables per-environment configuration (dev/staging/prod) without code changes.
 
 ---
 
@@ -338,15 +480,26 @@ This artifact is injected into the SQL generation prompt, providing the LLM with
 
 | Scope | Command | What it tests |
 | --- | --- | --- |
-| Pytest (unit + integration) | `python -m pytest tests/unit/test_agent.py tests/integration/test_api.py -vv` | Unit tests: Router logic, SQL/RAG/hybrid branches, insufficient-context fallback. Integration tests: FastAPI endpoint, response schema validation, error handling. |
+| **Unit Tests** | `python -m pytest tests/unit/ -vv` | **Agent Logic (`test_agent.py`):** Router logic, SQL/RAG/hybrid branches, insufficient-context fallback, SQL query validation (blocks DML/DDL, allows SELECT), error handling (pipeline exceptions). **Schema Validation (`test_schemas.py`):** Pydantic validation with edge cases (empty strings, whitespace-only, max length boundaries, exceeds max length), SQL injection pattern detection (DROP, DELETE, comments, UNION, OR), special characters handling (legitimate vs malicious), all dangerous keywords from config. |
+| **Integration Tests** | `python -m pytest tests/integration/ -vv` | **API Endpoints (`test_api.py`):** FastAPI endpoint contract, response schema validation, **edge cases** (empty questions → 422, whitespace-only → 422, exceeds max length → 422, SQL injection attempts → 422, malformed JSON → 422, missing/null fields → 422), **error scenarios** (LLM API failures → 500/503, database unavailability → 500, vector store unavailability → 500, no stack traces exposed). Uses `httpx.AsyncClient` with `ASGITransport` for proper async testing. |
+| **Security Tests** | `python -m pytest tests/security/ -vv` | **SQL Injection Prevention (`test_security.py`):** Multiple SQL injection patterns blocked at API layer (DROP, DELETE, UPDATE, INSERT, ALTER, TRUNCATE, EXEC, UNION, OR), LLM-generated malicious SQL blocked before execution, all dangerous keywords from config tested. **Input Validation:** Max/min length enforcement, special characters validation, required fields enforcement. **Error Information Leakage:** No stack traces, file paths, database schemas, or API keys exposed in error responses. |
+| **Ingestion Tests** | `python -m pytest tests/test_ingestion.py -vv` | **SQL Ingestion:** CSV loading, database creation, schema report generation, full pipeline. **RAG Ingestion:** File discovery, document loading, vector store creation, full pipeline. |
+| **All Tests** | `python -m pytest tests/ -vv` | Runs all test suites (69 tests total: 28 unit, 13 integration, 14 security, 14 ingestion). |
 
 **Testing Philosophy:**
-- **Unit tests:** Mock LLM calls and database/vector store access. Test routing logic, prompt formatting, citation building.
-- **Integration tests:** Use FastAPI `TestClient` to test full request/response cycle. Validate Pydantic schemas.
+- **Unit tests:** Mock LLM calls and database/vector store access. Test routing logic, prompt formatting, citation building, SQL query validation. Include **edge cases** (empty strings, whitespace-only, max length boundaries, exceeds max length, special characters) and **error scenarios** (validation failures, exception propagation, SQL validation failures).
+- **Integration tests:** Use `httpx.AsyncClient` with `ASGITransport` (not `TestClient`) to properly test async endpoints. Test full request/response cycle with real async behavior. Validate Pydantic schemas. Include **edge cases** (empty questions, exceeds max length, SQL injection attempts, malformed JSON, missing/null fields) and **error scenarios** (LLM API failures → 500/503, database unavailability → 500, vector store unavailability → 500, proper error message formatting without stack traces).
+- **Security tests:** Multi-layered security validation:
+  - **API Layer:** Input validation with Pydantic (max length, SQL injection pattern detection, dangerous keywords).
+  - **Core Layer:** SQL query validation (blocks DML/DDL, enforces SELECT-only).
+  - **Infrastructure Layer:** Read-only database connections.
+  - **Error Information Protection:** Verify no stack traces, file paths, database schemas, or API keys are exposed in error responses.
+
+**Async Testing:** All tests use `@pytest.mark.asyncio` and `httpx.AsyncClient` to properly handle async endpoints and verify non-blocking I/O behavior.
 
 ### 8.2. Manual Testing
 
-Extended manual checks (hybrid splits, FAISS probes, settings inspection) are documented in `docs/private/local_testing.md`. This includes:
+Extended manual checks (hybrid splits, FAISS probes, settings inspection) are documented in `docs/private/tests/local_testing.md`. This includes:
 - Direct FAISS similarity searches
 - SQL schema inspection
 - Agent function invocation from Python REPL
@@ -375,9 +528,15 @@ This POC is designed for **rapid demonstration** and **iterative development**. 
 10. **Caching:** Add Redis cache for identical queries to reduce LLM costs and latency.
 
 **Production Readiness Checklist:**
+- [x] Async/await patterns for all I/O-bound operations
+- [x] Comprehensive input validation and sanitization
+- [x] SQL injection prevention (query validation, read-only connections, parameterized queries)
+- [x] Robust error handling with appropriate HTTP status codes
+- [x] Testing coverage for edge cases and error scenarios
+- [x] Security tests for injection attacks and information leakage
 - [ ] Authentication/authorization
 - [ ] Rate limiting
-- [ ] Error handling & retries
+- [ ] Error handling & retries (enhanced)
 - [ ] Monitoring & alerting
 - [ ] Load testing
 - [ ] Security audit
@@ -428,6 +587,16 @@ Feel free to reach out for walkthroughs or to dive into any architectural or pro
 - **Cost:** Split LLM is called once per hybrid query. Synthesis LLM is called regardless. Net cost increase is minimal (~$0.0002 per hybrid query).
 
 **Trade-off:** Slightly higher cost vs. improved accuracy. Worth it for hybrid queries (typically <10% of total queries).
+
+---
+
+## 10. Author & Contact
+
+**Cristopher Rojas Lepe** — Lead AI Engineer
+- LinkedIn: https://www.linkedin.com/in/cristopherrojas
+- Email: crojaslepe@gmail.com
+
+Feel free to reach out for walkthroughs or to dive into any architectural or prompt-engineering detail. Every decision traces back to the PRD/TDD/backlog for quick context.
 
 ---
 

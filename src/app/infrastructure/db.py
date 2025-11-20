@@ -15,6 +15,13 @@ def _coerce_path(db_path: Union[str, Path, None] = None) -> Path:
 
 @lru_cache(maxsize=1)
 def get_sql_database(db_path: Union[str, Path, None] = None) -> SQLDatabase:
+    """
+    Get a read-only SQLDatabase connection to SQLite.
+    
+    Uses SQLite's read-only mode (`?mode=ro`) to prevent any write operations.
+    This provides an additional layer of security beyond query validation.
+    """
     resolved = _coerce_path(db_path)
-    uri = f"sqlite:///{resolved}"
+    # Use read-only mode for additional security
+    uri = f"sqlite:///{resolved}?mode=ro"
     return SQLDatabase.from_uri(uri)
