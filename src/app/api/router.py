@@ -113,6 +113,10 @@ async def ask_question(payload: AskRequest, request: Request) -> AskResponse:
                 status_code=status.HTTP_429_TOO_MANY_REQUESTS,
                 detail=f"Daily interaction limit exceeded: {exc.current_count}/{exc.limit}. Please try again tomorrow."
             ) from exc
+        # Record interaction immediately after rate limit check passes
+        # This ensures all requests (successful or not) count against the limit
+        # Prevents DoS by repeatedly triggering errors to bypass rate limiting
+        record_interaction(identifier)
     
     try:
         agent_result = await run_agent(payload.question, include_intermediate_steps=True)
@@ -150,10 +154,6 @@ async def ask_question(payload: AskRequest, request: Request) -> AskResponse:
         citations=citations,
         tool_trace=[str(entry) for entry in tool_trace],
     )
-    
-    # Record successful interaction only after successful response construction (if rate limiting is enabled)
-    if settings.enable_rate_limit:
-        record_interaction(identifier)
     
     return response
 
