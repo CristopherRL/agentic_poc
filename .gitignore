@@ -1,6 +1,4 @@
 .gitignore
-# Private files
-docs/private/
 
 # Virtual environment
 .venv/
