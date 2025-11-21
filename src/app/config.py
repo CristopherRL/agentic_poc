@@ -110,6 +110,23 @@ def _default_question_max_length() -> int:
     """
     return 2000
 
+# Define rate limiting enable/disable flag
+def _default_enable_rate_limit() -> bool:
+    """
+    Enable or disable daily rate limiting.
+    Set to False for local development, True for demo/production environments.
+    """
+    return True
+
+# Define daily interaction limit (for rate limiting)
+def _default_daily_interaction_limit() -> int:
+    """
+    Maximum allowed interactions per day per identifier (IP address or user ID).
+    Used to limit API usage in demo/production environments.
+    Only applies when enable_rate_limit is True.
+    """
+    return 20
+
 # Define dangerous SQL keywords (for security validation)
 def _default_dangerous_sql_keywords() -> list[str]:
     """
@@ -267,6 +284,10 @@ class Settings(BaseSettings):
 
     # Secrets / credentials
     openai_api_key: str = Field(validation_alias=AliasChoices("openai_api_key", "open_api_key"))
+    admin_token: str = Field(
+        default="",
+        description="Admin token for rate limit management endpoints. Set via ADMIN_TOKEN env var."
+    )
 
     # Filesystem layout
     project_root: Path = Field(default_factory=_default_project_root)
@@ -299,6 +320,10 @@ class Settings(BaseSettings):
     # Security settings
     question_max_length: int = Field(default_factory=_default_question_max_length)
     dangerous_sql_keywords: list[str] = Field(default_factory=_default_dangerous_sql_keywords)
+    
+    # Rate limiting settings
+    enable_rate_limit: bool = Field(default_factory=_default_enable_rate_limit)
+    daily_interaction_limit: int = Field(default_factory=_default_daily_interaction_limit)
 
     # Prompt templates
     rag_system_prompt: str = Field(default_factory=_default_rag_system_prompt)

@@ -9,6 +9,39 @@ An intelligent agent that answers natural-language questions by intelligently ro
 
 ---
 
+## Quick Start
+
+**Prerequisites:** Python 3.10+, OpenAI API key
+
+```bash
+# 1. Clone and setup
+git clone <repo-url>
+cd agentic_poc
+python -m venv .venv
+source .venv/bin/activate  # Windows: .\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+
+# 2. Configure OpenAI key
+cp .env.example .env  # Windows: Copy-Item .env.example .env
+# Edit .env and set OPENAI_API_KEY=sk-your-key-here
+
+# 3. Ingest data (CSV files and PDFs are included in docs/public/)
+python -m scripts.ingest_sql
+python -m scripts.ingest_rag
+
+# 4. Start API
+uvicorn src.app.main:app --host 0.0.0.0 --port 8000 --reload
+
+# 5. Test it
+curl -X POST http://127.0.0.1:8000/api/v1/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question": "Monthly RAV4 HEV sales in Germany in 2024"}'
+```
+
+**Note:** All required data files (CSV datasets and PDF documents) are included in `docs/public/`. No additional downloads needed.
+
+---
+
 ## 1. Problem Framing & Solution Overview
 
 ### Assignment Requirements
@@ -397,8 +430,14 @@ This artifact is injected into the SQL generation prompt, providing the LLM with
 
 ### 5.1. Prerequisites
 
-- Python 3.10+ (tested on 3.11)
-- OpenAI API key (for LLM and embeddings)
+- **Python 3.10+** (tested on 3.11)
+  - Verify: `python --version` or `python3 --version`
+- **OpenAI API key** (for LLM and embeddings)
+  - Get one at: https://platform.openai.com/api-keys
+- **Data files** (included in repo)
+  - CSV files: `docs/public/data/` (5 files: DIM_COUNTRY, DIM_MODEL, DIM_ORDERTYPE, FACT_SALES, FACT_SALES_ORDERTYPE)
+  - PDF documents: `docs/public/docs/` (contracts and warranty policy)
+  - Manuals: `docs/public/docs/manuals/` (Toyota RAV4 and Yaris GRMN)
 
 ### 5.2. Installation Steps
 
@@ -408,11 +447,13 @@ This artifact is injected into the SQL generation prompt, providing the LLM with
 | Python venv | `python -m venv .venv` | `python3 -m venv .venv` |
 | Activate venv | `.\.venv\Scripts\Activate.ps1` | `source .venv/bin/activate` |
 | Install deps | `pip install -r requirements.txt` | `pip install -r requirements.txt` |
-| Configure OpenAI key | `Copy-Item .env.example .env` then edit | `cp .env.example .env` then edit |
+| Configure OpenAI key | `Copy-Item .env.example .env`<br>Edit `.env` and set `OPENAI_API_KEY=sk-your-key-here` | `cp .env.example .env`<br>Edit `.env` and set `OPENAI_API_KEY=sk-your-key-here` |
 
-> **Important:** `OPEN_API_KEY` (or `openai_api_key`) must be set in `.env`. The `.env` file is Git-ignored for security. Docker requires `--env-file .env` at runtime.
+> **Important:** `OPENAI_API_KEY` must be set in `.env`. The `.env` file is Git-ignored for security. Docker requires `--env-file .env` at runtime.
 
 ### 5.3. Data Ingestion (Run After Setup)
+
+**Note:** All data files are included in the repository. No downloads required.
 
 | Task | Windows (PowerShell) | macOS / Linux (bash/zsh) |
 | --- | --- | --- |
@@ -420,6 +461,10 @@ This artifact is injected into the SQL generation prompt, providing the LLM with
 | Reset DB file | `python -c "from scripts.ingest_sql import reset_database; reset_database()"` | `python -c 'from scripts.ingest_sql import reset_database; reset_database()'` |
 | Build/refresh FAISS | `python -m scripts.ingest_rag` | same |
 | Reset FAISS index | `python -c "from scripts.ingest_rag import reset_vector_store; reset_vector_store()"` | `python -c 'from scripts.ingest_rag import reset_vector_store; reset_vector_store()'` |
+
+**Expected output:**
+- SQL ingestion: Creates `data/db/app.db` and `data/db/sql_schema.md` (~1-2 seconds)
+- RAG ingestion: Creates `data/vdb/faiss_index/` (~10-30 seconds, depends on OpenAI API)
 
 **Why reset functions?**
 - Enables iterative development: update CSVs/manuals → reset → re-ingest.
@@ -435,7 +480,7 @@ This artifact is injected into the SQL generation prompt, providing the LLM with
 | --- | --- | --- |
 | Start server | `uvicorn src.app.main:app --host 0.0.0.0 --port 8000 --reload` | same |
 | Health check | `Invoke-WebRequest -Uri http://127.0.0.1:8000/health` | `curl http://127.0.0.1:8000/health` |
-| Ask question | `Invoke-WebRequest -Uri "http://127.0.0.1:8000/api/v1/ask" -Method POST -ContentType "application/json" -Body '{"question": "Compare Toyota vs Lexus SUV sales in Western Europe in 2024 and summarize warranty differences"}'` | `curl -X POST http://127.0.0.1:8000/api/v1/ask -H "Content-Type: application/json" -d '{"question": "Compare Toyota vs Lexus SUV sales in Western Europe in 2024 and summarize warranty differences"}'` |
+| Ask question | `$body = @{question="Monthly RAV4 sales in 2024"} \| ConvertTo-Json; Invoke-WebRequest -Uri http://127.0.0.1:8000/api/v1/ask -Method POST -ContentType "application/json" -Body $body` | `curl -X POST http://127.0.0.1:8000/api/v1/ask -H "Content-Type: application/json" -d '{"question": "Monthly RAV4 sales in 2024"}'` |
 
 **Why `--reload`?**
 - Enables hot-reload during development. Code changes trigger automatic server restart.
@@ -447,7 +492,7 @@ This artifact is injected into the SQL generation prompt, providing the LLM with
 | Build image | `docker build -t agentic-poc .` | same |
 | Run container | `docker run --rm -p 8001:8000 --env-file .env agentic-poc` | same |
 | Health check | `Invoke-WebRequest -Uri http://127.0.0.1:8001/health` | `curl http://127.0.0.1:8001/health` |
-| Ask question | `Invoke-WebRequest -Uri "http://127.0.0.1:8001/api/v1/ask" -Method POST -ContentType "application/json" -Body '{"question": "Monthly RAV4 HEV sales in Germany in 2024"}'` | `curl -X POST http://127.0.0.1:8001/api/v1/ask -H "Content-Type: application/json" -d '{"question": "Monthly RAV4 HEV sales in Germany in 2024"}'` |
+| Ask question | `$body = @{question="Monthly RAV4 sales in 2024"} \| ConvertTo-Json; Invoke-WebRequest -Uri http://127.0.0.1:8001/api/v1/ask -Method POST -ContentType "application/json" -Body $body` | `curl -X POST http://127.0.0.1:8001/api/v1/ask -H "Content-Type: application/json" -d '{"question": "Monthly RAV4 sales in 2024"}'` |
 
 > **Note:** Change the host port (`-p 8002:8000`) if 8001 is already taken. Docker requires the `.env` file for the API key via `--env-file`.
 
@@ -512,7 +557,46 @@ Extended manual checks (hybrid splits, FAISS probes, settings inspection) are do
 
 ---
 
-## 9. Technical Debt & Production Path
+## 9. Troubleshooting
+
+### Common Issues
+
+| Issue | Solution |
+| --- | --- |
+| **`ModuleNotFoundError`** when running scripts | Ensure virtual environment is activated: `source .venv/bin/activate` (Windows: `.\.venv\Scripts\Activate.ps1`) |
+| **`OPENAI_API_KEY` not found** | Check `.env` file exists and contains `OPENAI_API_KEY=sk-...` (no quotes, no spaces around `=`) |
+| **SQLite database locked** (Windows) | Close any DB browser tools (DB Browser, VS Code SQLite extension). Or use reset function: `python -c "from scripts.ingest_sql import reset_database; reset_database()"` |
+| **`FileNotFoundError` for CSV/PDF files** | Verify data files exist: `ls docs/public/data/` and `ls docs/public/docs/`. Files are included in the repo. |
+| **Port 8000 already in use** | Change port: `uvicorn src.app.main:app --host 0.0.0.0 --port 8001 --reload` |
+| **RAG ingestion fails with API error** | Check OpenAI API key is valid and has credits. Check network connectivity. |
+| **SQL queries return empty results** | Verify ingestion completed: check `data/db/app.db` exists and `data/db/sql_schema.md` has content. Re-run `python -m scripts.ingest_sql` |
+
+### Verification Steps
+
+After setup, verify everything works:
+
+```bash
+# 1. Check Python version
+python --version  # Should be 3.10+
+
+# 2. Check dependencies installed
+pip list | grep -E "(fastapi|langchain|faiss)"  # Should show installed packages
+
+# 3. Check data files exist
+ls docs/public/data/*.csv  # Should show 5 CSV files
+ls docs/public/docs/*.pdf  # Should show 3 PDF files
+
+# 4. Check ingestion completed
+ls data/db/app.db  # Should exist
+ls data/vdb/faiss_index/  # Should contain index.faiss and index.pkl
+
+# 5. Test API health
+curl http://127.0.0.1:8000/health  # Should return {"status":"ok"}
+```
+
+---
+
+## 10. Technical Debt & Production Path
 
 This POC is designed for **rapid demonstration** and **iterative development**. The following items are documented to guide next-phase investment and stakeholder discussions:
 
@@ -543,7 +627,7 @@ This POC is designed for **rapid demonstration** and **iterative development**. 
 
 ---
 
-## 10. Author & Contact
+## 11. Author & Contact
 
 **Cristopher Rojas Lepe** — Lead AI Engineer
 - LinkedIn: https://www.linkedin.com/in/cristopherrojas
@@ -587,16 +671,6 @@ Feel free to reach out for walkthroughs or to dive into any architectural or pro
 - **Cost:** Split LLM is called once per hybrid query. Synthesis LLM is called regardless. Net cost increase is minimal (~$0.0002 per hybrid query).
 
 **Trade-off:** Slightly higher cost vs. improved accuracy. Worth it for hybrid queries (typically <10% of total queries).
-
----
-
-## 10. Author & Contact
-
-**Cristopher Rojas Lepe** — Lead AI Engineer
-- LinkedIn: https://www.linkedin.com/in/cristopherrojas
-- Email: crojaslepe@gmail.com
-
-Feel free to reach out for walkthroughs or to dive into any architectural or prompt-engineering detail. Every decision traces back to the PRD/TDD/backlog for quick context.
 
 ---
 

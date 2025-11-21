@@ -59,3 +59,28 @@ class AskResponse(BaseModel):
     sql_query: Optional[str] = None
     citations: List[Citation] = Field(default_factory=list)
     tool_trace: List[str] = Field(default_factory=list)
+
+
+# Admin schemas for rate limit management
+class RateLimitStats(BaseModel):
+    identifier: str
+    date: str
+    interaction_count: int
+    last_interaction_at: Optional[str] = None
+
+
+class RateLimitStatsResponse(BaseModel):
+    stats: List[RateLimitStats]
+    total_records: int
+
+
+class ResetRateLimitRequest(BaseModel):
+    identifier: Optional[str] = Field(
+        None,
+        description="Identifier to reset. If not provided, resets all identifiers for today."
+    )
+
+
+class ResetRateLimitResponse(BaseModel):
+    message: str
+    records_reset: int
