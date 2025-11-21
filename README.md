@@ -630,8 +630,8 @@ This POC is designed for **rapid demonstration** and **iterative development**. 
 ## 11. Author & Contact
 
 **Cristopher Rojas Lepe** — Lead AI Engineer
-- LinkedIn: https://www.linkedin.com/in/cristopherrojas
-- Email: crojaslepe@gmail.com
+- LinkedIn: https://www.linkedin.com/in/cristopherrojaslepe/
+- Email: cristopher.rojas.lepe@gmail.com
 
 Feel free to reach out for walkthroughs or to dive into any architectural or prompt-engineering detail. Every decision traces back to the PRD/TDD/backlog for quick context.
 
