@@ -603,13 +603,17 @@ This POC is designed for **rapid demonstration** and **iterative development**. 
 1. **Conversation memory:** Implement short-term memory management within the same conversation session (e.g., LangChain `ConversationBufferMemory` or custom session store) to enable contextual follow-up questions and maintain conversation state across multiple API calls.
 2. **Managed persistence:** Migrate SQLite → Postgres/Snowflake; FAISS → managed vector store (Azure AI Search, Pinecone) for scale & concurrency.
 3. **Automated manual ingestion:** Replace manual TXT extraction with Playwright/puppeteer crawler or official API; address licensing.
-4. **Secrets & security:** Move `.env` into a vault (Azure Key Vault), enforce least-privilege DB roles, add request auth (API keys, OAuth).
-5. **Observability & LLMOps:** Add structured logging, tracing, and LangSmith instrumentation for prompt cost/drift monitoring.
-6. **CI/CD:** GitHub Actions or Azure DevOps pipeline running lint/tests/docker build on push.
-7. **LangGraph migration:** Upgrade planner to LangGraph for explicit state management, retries, and better guardrails.
-8. **Stakeholder interface:** Wrap the API with a lightweight UI (Streamlit/Gradio) for demos and workshops.
-9. **Streaming responses:** Implement Server-Sent Events (SSE) for real-time answer streaming (improves perceived latency).
-10. **Caching:** Add Redis cache for identical queries to reduce LLM costs and latency.
+4. **Authentication & Authorization:** Implement user authentication (API keys, OAuth 2.0, JWT tokens) and role-based access control (RBAC). Currently, the API is open to all requests. Rate limiting uses IP-based identification; production requires user-based identification for accurate per-user limits.
+5. **Enhanced Error Handling & Retries:** Implement automatic retries with exponential backoff for external API calls (OpenAI), circuit breakers to prevent cascading failures, and dead letter queues for persistent errors. Currently, errors are returned immediately without retry logic.
+6. **Monitoring & Alerting:** Add structured logging (JSON format), application performance monitoring (APM) with Datadog/Azure Monitor, metrics collection (latency, throughput, error rates), and automated alerts for critical issues (high error rates, API downtime, performance degradation).
+7. **Load Testing:** Conduct comprehensive load testing using tools like Locust or k6 to identify system bottlenecks, determine maximum throughput, and validate performance under stress. Currently, no load testing has been performed.
+8. **Security Audit:** Conduct professional security audit including code review, dependency scanning (Snyk, Dependabot), penetration testing, and OWASP Top 10 analysis. While basic security measures are implemented, a comprehensive audit is required for production.
+9. **Secrets & security:** Move `.env` into a vault (Azure Key Vault), enforce least-privilege DB roles.
+10. **CI/CD:** GitHub Actions or Azure DevOps pipeline running lint/tests/docker build on push.
+11. **LangGraph migration:** Upgrade planner to LangGraph for explicit state management, retries, and better guardrails.
+12. **Stakeholder interface:** Wrap the API with a lightweight UI (Streamlit/Gradio) for demos and workshops.
+13. **Streaming responses:** Implement Server-Sent Events (SSE) for real-time answer streaming (improves perceived latency).
+14. **Caching:** Add Redis cache for identical queries to reduce LLM costs and latency.
 
 **Production Readiness Checklist:**
 - [x] Async/await patterns for all I/O-bound operations
@@ -618,8 +622,8 @@ This POC is designed for **rapid demonstration** and **iterative development**. 
 - [x] Robust error handling with appropriate HTTP status codes
 - [x] Testing coverage for edge cases and error scenarios
 - [x] Security tests for injection attacks and information leakage
+- [x] Rate limiting (daily interaction limits per IP, configurable via `ENABLE_RATE_LIMIT` and `DAILY_INTERACTION_LIMIT`)
 - [ ] Authentication/authorization
-- [ ] Rate limiting
 - [ ] Error handling & retries (enhanced)
 - [ ] Monitoring & alerting
 - [ ] Load testing
@@ -629,7 +633,7 @@ This POC is designed for **rapid demonstration** and **iterative development**. 
 
 ## 11. Author & Contact
 
-**Cristopher Rojas Lepe** — Lead AI Engineer
+**Cristopher Rojas Lepe** — AI & Data Engineer
 - LinkedIn: https://www.linkedin.com/in/cristopherrojaslepe/
 - Email: cristopher.rojas.lepe@gmail.com
 
