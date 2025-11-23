@@ -7,38 +7,46 @@
 
 An intelligent agent that answers natural-language questions by intelligently routing between SQL analytics, document retrieval (RAG), or both. This POC demonstrates rapid prototyping discipline with reusable ingestion scripts, configurable multi-model routing, transparent responses, and production-ready documentation.
 
----
+## Project Structure
+
+This is a **monorepo** containing two projects:
+
+- **`backend/`** - FastAPI backend (Python)
+  - See [backend/README.md](backend/README.md) for backend-specific documentation
+- **`frontend/`** - React frontend (Vite)
+  - See [frontend/README.md](frontend/README.md) for frontend-specific documentation
 
 ## Quick Start
 
-**Prerequisites:** Python 3.10+, OpenAI API key
+### Backend Setup
 
 ```bash
-# 1. Clone and setup
-git clone <repo-url>
-cd agentic_poc
+cd backend
 python -m venv .venv
 source .venv/bin/activate  # Windows: .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-
-# 2. Configure OpenAI key
-cp .env.example .env  # Windows: Copy-Item .env.example .env
+cp .env.example .env
 # Edit .env and set OPENAI_API_KEY=sk-your-key-here
-
-# 3. Ingest data (CSV files and PDFs are included in docs/public/)
 python -m scripts.ingest_sql
 python -m scripts.ingest_rag
-
-# 4. Start API
 uvicorn src.app.main:app --host 0.0.0.0 --port 8000 --reload
-
-# 5. Test it
-curl -X POST http://127.0.0.1:8000/api/v1/ask \
-  -H "Content-Type: application/json" \
-  -d '{"question": "Monthly RAV4 HEV sales in Germany in 2024"}'
 ```
 
-**Note:** All required data files (CSV datasets and PDF documents) are included in `docs/public/`. No additional downloads needed.
+### Frontend Setup
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+The frontend will run on `http://localhost:5173` and connect to the backend on `http://localhost:8000`.
+
+**Note:** All required data files (CSV datasets and PDF documents) are included in `backend/docs/public/`. No additional downloads needed.
+
+For detailed setup instructions, see:
+- [Backend README](backend/README.md)
+- [Frontend README](frontend/README.md)
 
 ---
 
@@ -457,10 +465,10 @@ This artifact is injected into the SQL generation prompt, providing the LLM with
 
 | Task | Windows (PowerShell) | macOS / Linux (bash/zsh) |
 | --- | --- | --- |
-| Build/refresh SQLite | `python -m scripts.ingest_sql` | same |
-| Reset DB file | `python -c "from scripts.ingest_sql import reset_database; reset_database()"` | `python -c 'from scripts.ingest_sql import reset_database; reset_database()'` |
-| Build/refresh FAISS | `python -m scripts.ingest_rag` | same |
-| Reset FAISS index | `python -c "from scripts.ingest_rag import reset_vector_store; reset_vector_store()"` | `python -c 'from scripts.ingest_rag import reset_vector_store; reset_vector_store()'` |
+| Build/refresh SQLite | `cd backend`<br>`python -m scripts.ingest_sql` | same |
+| Reset DB file | `cd backend`<br>`python -c "from scripts.ingest_sql import reset_database; reset_database()"` | `cd backend`<br>`python -c 'from scripts.ingest_sql import reset_database; reset_database()'` |
+| Build/refresh FAISS | `cd backend`<br>`python -m scripts.ingest_rag` | same |
+| Reset FAISS index | `cd backend`<br>`python -c "from scripts.ingest_rag import reset_vector_store; reset_vector_store()"` | `cd backend`<br>`python -c 'from scripts.ingest_rag import reset_vector_store; reset_vector_store()'` |
 
 **Expected output:**
 - SQL ingestion: Creates `data/db/app.db` and `data/db/sql_schema.md` (~1-2 seconds)
@@ -478,7 +486,7 @@ This artifact is injected into the SQL generation prompt, providing the LLM with
 
 | Action | Windows (PowerShell) | macOS / Linux (bash/zsh) |
 | --- | --- | --- |
-| Start server | `uvicorn src.app.main:app --host 0.0.0.0 --port 8000 --reload` | same |
+| Start server | `cd backend`<br>`uvicorn src.app.main:app --host 0.0.0.0 --port 8000 --reload` | same |
 | Health check | `Invoke-WebRequest -Uri http://127.0.0.1:8000/health` | `curl http://127.0.0.1:8000/health` |
 | Ask question | `$body = @{question="Monthly RAV4 sales in 2024"} \| ConvertTo-Json; Invoke-WebRequest -Uri http://127.0.0.1:8000/api/v1/ask -Method POST -ContentType "application/json" -Body $body` | `curl -X POST http://127.0.0.1:8000/api/v1/ask -H "Content-Type: application/json" -d '{"question": "Monthly RAV4 sales in 2024"}'` |
 
@@ -489,8 +497,8 @@ This artifact is injected into the SQL generation prompt, providing the LLM with
 
 | Action | Windows (PowerShell) | macOS / Linux (bash/zsh) |
 | --- | --- | --- |
-| Build image | `docker build -t agentic-poc .` | same |
-| Run container | `docker run --rm -p 8001:8000 --env-file .env agentic-poc` | same |
+| Build image | `cd backend`<br>`docker build -t agentic-poc .` | same |
+| Run container | `cd backend`<br>`docker run --rm -p 8001:8000 --env-file .env agentic-poc` | same |
 | Health check | `Invoke-WebRequest -Uri http://127.0.0.1:8001/health` | `curl http://127.0.0.1:8001/health` |
 | Ask question | `$body = @{question="Monthly RAV4 sales in 2024"} \| ConvertTo-Json; Invoke-WebRequest -Uri http://127.0.0.1:8001/api/v1/ask -Method POST -ContentType "application/json" -Body $body` | `curl -X POST http://127.0.0.1:8001/api/v1/ask -H "Content-Type: application/json" -d '{"question": "Monthly RAV4 sales in 2024"}'` |
 
@@ -503,7 +511,202 @@ This artifact is injected into the SQL generation prompt, providing the LLM with
 
 ---
 
-## 7. Sample Questions & Expected Behavior
+## 7. Frontend Development
+
+### 7.1. Prerequisites
+
+- **Node.js 18+** and npm (for frontend development)
+- Backend API running on `http://localhost:8000` (see Section 6)
+
+### 7.2. Local Development
+
+**Setup:**
+```bash
+cd frontend
+npm install
+```
+
+**Start development server:**
+```bash
+npm run dev
+```
+
+The frontend will run on `http://localhost:5173` (Vite default port) and automatically proxy API requests to `http://localhost:8000`.
+
+**Note:** Make sure the backend is running on port 8000 before starting the frontend.
+
+**Environment Variables:**
+- `VITE_API_URL`: Backend API URL (defaults to `http://localhost:8000` in development)
+- Create `frontend/.env.local` to override:
+  ```
+  VITE_API_URL=http://localhost:8000
+  ```
+
+### 7.3. Frontend Features
+
+- **Chat Interface:** Simple, clean chat UI for asking questions
+- **Message History:** Displays conversation history with user questions and assistant responses
+- **Expandable Details:** 
+  - SQL queries (if SQL route was used)
+  - Citations (if RAG route was used)
+  - Tool trace (for debugging and transparency)
+- **Loading States:** Visual feedback during API calls
+- **Error Handling:** User-friendly error messages
+
+### 7.4. Build for Production
+
+```bash
+cd frontend
+npm run build
+```
+
+This creates an optimized production build in `frontend/dist/`.
+
+---
+
+## 8. Deployment to Vercel
+
+### 8.1. Prerequisites
+
+- Vercel account (free tier is sufficient)
+- GitHub/GitLab/Bitbucket repository (or use Vercel CLI)
+- Backend data ingested (SQLite DB and FAISS index)
+
+### 8.2. Deployment Strategy
+
+**Why `vercel.json` is in the root?**
+
+The root `vercel.json` is configured for **Option A** (single Vercel project). It tells Vercel:
+- Build backend as Python serverless functions (`api/index.py`)
+- Build frontend as static site (`frontend/package.json`)
+- Route `/api/*` to backend, `/*` to frontend
+
+**Two Deployment Options:**
+
+#### Option A: Single Vercel Project (Monorepo) - Current Setup ✅
+
+Deploy both backend and frontend as a single Vercel project:
+
+1. **Connect Repository:**
+   - Go to [vercel.com](https://vercel.com)
+   - Click "New Project"
+   - Import your Git repository
+
+2. **Configure Project:**
+   - **Framework Preset:** Other
+   - **Root Directory:** `.` (root - uses `vercel.json` and `api/index.py`)
+   - **Build Command:** Leave empty (Vercel will detect Python and Node.js)
+   - **Output Directory:** Leave empty
+
+3. **Routes (configured in `vercel.json`):**
+   - `/api/*` → Backend serverless functions (`api/index.py`)
+   - `/*` → Frontend static files (`frontend/dist/`)
+
+**Pros:** Simple setup, single deployment, shared domain  
+**Cons:** Less isolation, harder to scale independently
+
+#### Option B: Separate Vercel Projects (Recommended for Production) 🚀
+
+Deploy backend and frontend as separate projects for better isolation:
+
+**Backend Project:**
+1. Create new Vercel project
+2. **Root Directory:** `.` (root)
+3. **Build Command:** Leave empty
+4. Uses `api/index.py` for serverless functions
+5. **No need for `vercel.json`** - Vercel auto-detects Python
+
+**Frontend Project:**
+1. Create new Vercel project  
+2. **Root Directory:** `frontend`
+3. **Framework Preset:** Vite (auto-detected)
+4. **No need for `vercel.json`** - Vercel auto-detects Vite
+
+**Pros:** Better isolation, independent scaling, separate domains  
+**Cons:** Two projects to manage, need to configure CORS
+
+**To switch to Option B:** You can delete the root `vercel.json` and deploy as separate projects.
+
+3. **Environment Variables:**
+   Add the following in Vercel dashboard → Settings → Environment Variables:
+   ```
+   OPENAI_API_KEY=sk-your-key-here
+   ```
+   Optionally add:
+   ```
+   ADMIN_TOKEN=your-admin-token-here
+   ENABLE_RATE_LIMIT=true
+   DAILY_INTERACTION_LIMIT=20
+   ```
+
+4. **Deploy:**
+   - Click "Deploy"
+   - Vercel will detect `vercel.json` and `api/index.py`
+   - Backend will be available at `https://your-project.vercel.app/api/`
+
+**Option B: Using Vercel CLI**
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Login
+vercel login
+
+# Deploy
+vercel
+
+# Set environment variables
+vercel env add OPENAI_API_KEY
+```
+
+### 8.3. Environment Variables
+
+**Backend (in Vercel dashboard or `backend/.env`):**
+```
+OPENAI_API_KEY=sk-your-key-here
+ADMIN_TOKEN=your-admin-token  # Optional
+CORS_ORIGINS=https://your-frontend.vercel.app  # For production
+```
+
+**Frontend (in Vercel dashboard or `frontend/.env.local`):**
+```
+VITE_API_URL=https://your-backend.vercel.app
+```
+
+**CORS Configuration:**
+
+The backend automatically reads `CORS_ORIGINS` environment variable. Set it in Vercel dashboard:
+
+```
+CORS_ORIGINS=https://your-frontend.vercel.app
+```
+
+Or add multiple origins (comma-separated):
+```
+CORS_ORIGINS=https://frontend1.vercel.app,https://frontend2.vercel.app
+```
+
+Local development origins (`localhost:5173`, `localhost:3000`) are included by default.
+
+### 8.4. Post-Deployment Checklist
+
+- [ ] Backend health check: `https://your-backend.vercel.app/health`
+- [ ] Frontend loads correctly
+- [ ] API requests work from frontend (check browser console)
+- [ ] CORS configured correctly
+- [ ] Environment variables set in Vercel dashboard
+- [ ] Data files (`data/db/app.db`, `data/vdb/faiss_index/`) are included in deployment
+
+**Note:** For production, consider:
+- Using external storage for SQLite DB and FAISS index (e.g., Vercel Blob Storage, AWS S3)
+- Setting up proper CORS origins via environment variables
+- Configuring custom domains
+- Setting up monitoring and logging
+
+---
+
+## 9. Sample Questions & Expected Behavior
 
 | Question | Expected route | Technical details |
 | --- | --- | --- |
@@ -519,9 +722,9 @@ This artifact is injected into the SQL generation prompt, providing the LLM with
 
 ---
 
-## 8. Testing Strategy
+## 10. Testing Strategy
 
-### 8.1. Automated Tests
+### 10.1. Automated Tests
 
 | Scope | Command | What it tests |
 | --- | --- | --- |
@@ -542,7 +745,7 @@ This artifact is injected into the SQL generation prompt, providing the LLM with
 
 **Async Testing:** All tests use `@pytest.mark.asyncio` and `httpx.AsyncClient` to properly handle async endpoints and verify non-blocking I/O behavior.
 
-### 8.2. Manual Testing
+### 10.2. Manual Testing
 
 Extended manual checks (hybrid splits, FAISS probes, settings inspection) are documented in `docs/private/tests/local_testing.md`. This includes:
 - Direct FAISS similarity searches
@@ -557,7 +760,7 @@ Extended manual checks (hybrid splits, FAISS probes, settings inspection) are do
 
 ---
 
-## 9. Troubleshooting
+## 11. Troubleshooting
 
 ### Common Issues
 
@@ -583,12 +786,12 @@ python --version  # Should be 3.10+
 pip list | grep -E "(fastapi|langchain|faiss)"  # Should show installed packages
 
 # 3. Check data files exist
-ls docs/public/data/*.csv  # Should show 5 CSV files
-ls docs/public/docs/*.pdf  # Should show 3 PDF files
+ls backend/docs/public/data/*.csv  # Should show 5 CSV files
+ls backend/docs/public/docs/*.pdf  # Should show 3 PDF files
 
 # 4. Check ingestion completed
-ls data/db/app.db  # Should exist
-ls data/vdb/faiss_index/  # Should contain index.faiss and index.pkl
+ls backend/data/db/app.db  # Should exist
+ls backend/data/vdb/faiss_index/  # Should contain index.faiss and index.pkl
 
 # 5. Test API health
 curl http://127.0.0.1:8000/health  # Should return {"status":"ok"}
@@ -596,7 +799,7 @@ curl http://127.0.0.1:8000/health  # Should return {"status":"ok"}
 
 ---
 
-## 10. Technical Debt & Production Path
+## 12. Technical Debt & Production Path
 
 This POC is designed for **rapid demonstration** and **iterative development**. The following items are documented to guide next-phase investment and stakeholder discussions:
 
@@ -631,7 +834,7 @@ This POC is designed for **rapid demonstration** and **iterative development**. 
 
 ---
 
-## 11. Author & Contact
+## 13. Author & Contact
 
 **Cristopher Rojas Lepe** — AI & Data Engineer
 - LinkedIn: https://www.linkedin.com/in/cristopherrojaslepe/
