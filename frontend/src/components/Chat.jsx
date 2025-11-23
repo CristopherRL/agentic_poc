@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import Message from './Message'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '' : 'http://localhost:8000')
 
 function Chat() {
   const [messages, setMessages] = useState([])
