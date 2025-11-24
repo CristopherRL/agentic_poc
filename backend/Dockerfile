@@ -16,10 +16,13 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy source code and data
-COPY src ./src
 COPY data ./data
 COPY docs/public/data ./docs/public/data
 COPY docs/public/docs ./docs/public/docs
+COPY scripts/__init__.py ./scripts/__init__.py
+COPY scripts/ingest_sql.py ./scripts/ingest_sql.py
+COPY scripts/ingest_rag.py ./scripts/ingest_rag.py
+COPY src ./src
 
 EXPOSE 8000
 
