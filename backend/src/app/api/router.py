@@ -8,6 +8,7 @@ from src.app.api.schemas import (
     AskRequest,
     AskResponse,
     Citation,
+    RateLimitInfo,
     RateLimitStats,
     RateLimitStatsResponse,
     ResetRateLimitRequest,
@@ -24,6 +25,7 @@ from src.app.core.conversation_memory import (
 from src.app.core.rate_limit import (
     RateLimitExceeded,
     check_rate_limit,
+    get_remaining_interactions,
     record_interaction,
 )
 from src.app.infrastructure.rate_limit_db import (
@@ -77,13 +79,46 @@ def _get_client_identifier(request: Request) -> str:
     """
     Extract client identifier from request (IP address).
     
-    Checks X-Forwarded-For header for proxied requests, falls back to direct client IP.
+    Checks multiple headers in order for proxied requests (Render.com, Cloudflare, etc.):
+    - X-Forwarded-For (standard proxy header)
+    - X-Real-IP (nginx and other proxies)
+    - CF-Connecting-IP (Cloudflare)
+    Falls back to direct client IP.
     """
+    # Check headers in order of preference
     forwarded_for = request.headers.get("X-Forwarded-For")
+    real_ip = request.headers.get("X-Real-IP")
+    cf_connecting_ip = request.headers.get("CF-Connecting-IP")
+    client_host = request.client.host if request.client else None
+    
+    # Log all available headers for debugging
+    logger.debug(
+        f"[IP Detection] Headers: X-Forwarded-For={forwarded_for}, "
+        f"X-Real-IP={real_ip}, CF-Connecting-IP={cf_connecting_ip}, "
+        f"Client={client_host}"
+    )
+    
+    # Use first available IP from headers
     if forwarded_for:
         # X-Forwarded-For can contain multiple IPs, take the first one
-        return forwarded_for.split(",")[0].strip()
-    return request.client.host if request.client else "unknown"
+        identifier = forwarded_for.split(",")[0].strip()
+        logger.debug(f"[IP Detection] Selected from X-Forwarded-For: {identifier}")
+        return identifier
+    
+    if real_ip:
+        identifier = real_ip.strip()
+        logger.debug(f"[IP Detection] Selected from X-Real-IP: {identifier}")
+        return identifier
+    
+    if cf_connecting_ip:
+        identifier = cf_connecting_ip.strip()
+        logger.debug(f"[IP Detection] Selected from CF-Connecting-IP: {identifier}")
+        return identifier
+    
+    # Fallback to direct client IP
+    identifier = client_host if client_host else "unknown"
+    logger.debug(f"[IP Detection] Selected from Client: {identifier}")
+    return identifier
 
 
 @router.post("/ask", response_model=AskResponse)
@@ -130,6 +165,7 @@ async def ask_question(payload: AskRequest, request: Request) -> AskResponse:
         logger.info(f"[Request] Conversation history: {len(conversation_history)} chars")
     
     # Check rate limit before processing (if enabled)
+    rate_limit_info = None
     if settings.enable_rate_limit:
         try:
             check_rate_limit(identifier, settings.daily_interaction_limit)
@@ -141,7 +177,18 @@ async def ask_question(payload: AskRequest, request: Request) -> AskResponse:
         # Record interaction immediately after rate limit check passes
         # This ensures all requests (successful or not) count against the limit
         # Prevents DoS by repeatedly triggering errors to bypass rate limiting
-        record_interaction(identifier)
+        current_count = record_interaction(identifier)
+        remaining = get_remaining_interactions(identifier, settings.daily_interaction_limit)
+        rate_limit_info = RateLimitInfo(
+            remaining_interactions=remaining,
+            daily_limit=settings.daily_interaction_limit,
+            current_count=current_count
+        )
+        logger.info(
+            f"[Rate Limit] Identifier: {identifier} | "
+            f"Remaining: {remaining}/{settings.daily_interaction_limit} | "
+            f"Current: {current_count}"
+        )
     
     try:
         start_time = time.time()
@@ -190,6 +237,7 @@ async def ask_question(payload: AskRequest, request: Request) -> AskResponse:
         citations=citations,
         tool_trace=[str(entry) for entry in tool_trace],
         session_id=session_id,
+        rate_limit_info=rate_limit_info,
     )
     
     return response

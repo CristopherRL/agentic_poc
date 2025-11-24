@@ -127,18 +127,47 @@ def _stringify(value: Any) -> str:
         return str(value)
 
 # Build citations - For RAG
+def _sanitize_document_source(source: str) -> str:
+    """
+    Sanitize document source path to generic document type.
+    
+    Replaces file paths and names with generic document types.
+    Examples:
+    - "Contract_Toyota_2023.pdf" -> "Contract Document"
+    - "Toyota_RAV4.txt" -> "Manual Document"
+    - "Warranty_Policy_Appendix.pdf" -> "Policy Document"
+    """
+    source_lower = source.lower()
+    
+    # Map file patterns to generic document types
+    if "contract" in source_lower:
+        return "Contract Document"
+    elif "manual" in source_lower or "rav4" in source_lower or "yaris" in source_lower:
+        return "Manual Document"
+    elif "warranty" in source_lower or "policy" in source_lower:
+        return "Policy Document"
+    elif "appendix" in source_lower:
+        return "Policy Appendix"
+    else:
+        # Generic fallback
+        return "Document"
+
+
 def _build_citations(docs: Iterable) -> List[Dict[str, Any]]:
     citations: List[Dict[str, Any]] = []
     for doc in docs:
         metadata = doc.metadata or {}
+        raw_source = str(
+            metadata.get("source")
+            or metadata.get("source_document")
+            or metadata.get("file_path")
+            or ""
+        )
+        # Sanitize source to generic document type
+        sanitized_source = _sanitize_document_source(raw_source) if raw_source else "Document"
         citations.append(
             {
-                "source_document": str(
-                    metadata.get("source")
-                    or metadata.get("source_document")
-                    or metadata.get("file_path")
-                    or ""
-                ),
+                "source_document": sanitized_source,
                 "page": metadata.get("page"),
                 "content": doc.page_content,
             }
@@ -150,7 +179,9 @@ def _format_docs_for_prompt(docs: Iterable) -> str:
     sections: List[str] = []
     for idx, doc in enumerate(docs, start=1):
         metadata = doc.metadata or {}
-        source = metadata.get("source") or metadata.get("source_document") or "unknown"
+        raw_source = metadata.get("source") or metadata.get("source_document") or "unknown"
+        # Sanitize source to generic document type
+        source = _sanitize_document_source(str(raw_source)) if raw_source else "Document"
         page = metadata.get("page")
         header = f"[Document {idx}] Source: {source}"
         if page is not None:

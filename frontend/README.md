@@ -37,7 +37,9 @@ Create `.env.local` for local development:
 VITE_API_URL=http://localhost:8000
 ```
 
-For production, set `VITE_API_URL` to your backend URL (e.g., `https://your-backend.vercel.app`).
+For production, set `VITE_API_URL` to your backend URL (e.g., `https://your-backend.onrender.com`).
+
+**Note:** The backend is deployed on Render (not Vercel) due to size limitations. The frontend is deployed on Vercel.
 
 ## Available Scripts
 
@@ -56,6 +58,28 @@ For production, set `VITE_API_URL` to your backend URL (e.g., `https://your-back
 
 ## Deployment
 
-See main [README.md](../README.md) for Vercel deployment instructions.
+### Vercel Deployment
+
+1. **Connect Repository:**
+   - Go to [vercel.com](https://vercel.com)
+   - Click "New Project"
+   - Import your Git repository
+
+2. **Configure Project:**
+   - **Framework Preset:** Vite (auto-detected)
+   - **Root Directory:** `frontend`
+   - Build settings are auto-detected
+
+3. **Environment Variables:**
+   - Set `VITE_API_URL` to your backend URL (e.g., `https://your-backend.onrender.com`)
+   - **Important:** Do NOT include `/api` prefix
+
+4. **Deploy:**
+   - Click "Deploy"
+   - Frontend will be available at `https://your-project.vercel.app`
+
+**Note:** The backend is deployed separately on Render. Ensure `CORS_ORIGINS` is configured in the backend to allow requests from your Vercel frontend URL.
+
+See main [README.md](../README.md) for complete deployment instructions.
 
 

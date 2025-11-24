@@ -58,12 +58,19 @@ class Citation(BaseModel):
     content: str
 
 
+class RateLimitInfo(BaseModel):
+    remaining_interactions: int
+    daily_limit: int
+    current_count: int
+
+
 class AskResponse(BaseModel):
     answer: str
     sql_query: Optional[str] = None
     citations: List[Citation] = Field(default_factory=list)
     tool_trace: List[str] = Field(default_factory=list)
     session_id: str = Field(description="Session identifier for conversation continuity")
+    rate_limit_info: Optional[RateLimitInfo] = Field(None, description="Rate limit information for the current user")
 
 
 # Admin schemas for rate limit management

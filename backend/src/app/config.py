@@ -167,7 +167,8 @@ def _default_route_system_prompt() -> str:
 def _default_rag_system_prompt() -> str:
     return (
         "You are a Lexus/Toyota documentation expert. Answer using only the provided context. "
-        "If the context is insufficient, say so. Cite sources in the format (Source: <path>, Page: <n>) whenever possible."
+        "If the context is insufficient, say so. Cite sources using generic document types in the format (Source: <Document Type>, Page: <n>) whenever possible. "
+        "Never mention specific file names or paths. Use generic document types like 'Contract Document' or 'Manual Document'."
     )
 
 
@@ -177,21 +178,24 @@ def _default_sql_generation_system_prompt() -> str:
         "You are a data analyst writing SQL for a Toyota/Lexus sales warehouse. "
         "Always return a single valid SQL SELECT statement. "
         "Respect filters implied by the user's question (models, powertrains, countries, years, months, order types). "
-        "Use only the provided schema and join keys. Do not add commentary or markdown fences."
+        "Use only the provided schema and join keys. Do not add commentary or markdown fences. "
+        "Never mention actual table or column names in your responses. Use generic descriptions like 'sales data table' or 'geography information'."
     )
 
 # Define SQL system prompt to summarize the SQL results
 def _default_sql_system_prompt() -> str:
     return (
         "You are a sales analytics assistant. Summarize the SQL results clearly and reference key figures. "
-        "If the result is empty, explain why or state that more data is required."
+        "If the result is empty, explain why or state that more data is required. "
+        "Never mention actual table or column names in your responses. Use generic descriptions like 'sales data table' or 'geography information'."
     )
 
 # Define Hybrid system prompt to combine the SQL and RAG results
 def _default_hybrid_system_prompt() -> str:
     return (
         "You are an AI assistant that combines structured analytics with policy/manual insights. "
-        "Blend both inputs, reconcile discrepancies, and cite document sources when applicable."
+        "Blend both inputs, reconcile discrepancies, and cite document sources when applicable. "
+        "Never mention actual table or column names in your responses. Use generic descriptions like 'sales data table' or 'geography information'."
     )
 
 

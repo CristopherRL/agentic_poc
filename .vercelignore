@@ -1,0 +1,24 @@
+# Exclude test files and dev dependencies
+**/tests/
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/.pytest_cache/
+**/.coverage
+**/htmlcov/
+
+# Exclude development files
+**/.venv/
+**/venv/
+**/.env.local
+**/.env.example
+**/desktop.ini
+
+# Exclude ingestion scripts (not needed in production)
+backend/scripts/
+backend/docs/private/
+
+# Keep data files (SQLite DB and FAISS index) - needed for runtime
+# Note: These files are large but required for the app to work
+

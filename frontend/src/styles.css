@@ -40,6 +40,40 @@ body {
   opacity: 0.9;
 }
 
+.ai-disclosure-banner {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.ai-disclosure-icon {
+  font-size: 1.2rem;
+}
+
+.language-notice {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.language-notice-icon {
+  font-size: 1rem;
+}
+
 .chat-container {
   background: white;
   border-radius: 12px;
@@ -328,6 +362,45 @@ body {
   color: #c33;
   border-top: 1px solid #e74c3c;
   font-size: 0.9rem;
+}
+
+.rate-limit-badge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 0.9rem;
+}
+
+.rate-limit-label {
+  color: #666;
+  font-weight: 500;
+}
+
+.rate-limit-value {
+  color: #667eea;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.rate-limit-info-empty {
+  margin: 1rem 0;
+  padding: 0.75rem;
+  background: rgba(102, 126, 234, 0.1);
+  border-radius: 6px;
+  border-left: 3px solid #667eea;
+}
+
+.rate-limit-text {
+  color: #555;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.rate-limit-text strong {
+  color: #667eea;
 }
 
 /* Scrollbar styling */

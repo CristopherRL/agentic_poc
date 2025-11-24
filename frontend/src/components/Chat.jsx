@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Message from './Message'
 
 const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '' : 'http://localhost:8000')
@@ -8,6 +8,11 @@ function Chat() {
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [rateLimitInfo, setRateLimitInfo] = useState(null)
+  const [sessionId, setSessionId] = useState(() => {
+    // Load session_id from localStorage on mount
+    return localStorage.getItem('sessionId') || null
+  })
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -33,7 +38,10 @@ function Chat() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ question }),
+        body: JSON.stringify({ 
+          question,
+          session_id: sessionId 
+        }),
       })
 
       if (!response.ok) {
@@ -42,6 +50,17 @@ function Chat() {
       }
 
       const data = await response.json()
+
+      // Save session_id to localStorage
+      if (data.session_id) {
+        setSessionId(data.session_id)
+        localStorage.setItem('sessionId', data.session_id)
+      }
+
+      // Update rate limit info
+      if (data.rate_limit_info) {
+        setRateLimitInfo(data.rate_limit_info)
+      }
 
       // Add assistant message
       const assistantMessage = {
@@ -68,10 +87,26 @@ function Chat() {
 
   return (
     <div className="chat-container">
+      {rateLimitInfo && (
+        <div className="rate-limit-badge">
+          <span className="rate-limit-label">Interactions remaining:</span>
+          <span className="rate-limit-value">
+            {rateLimitInfo.remaining_interactions} / {rateLimitInfo.daily_limit}
+          </span>
+        </div>
+      )}
       <div className="messages-container">
         {messages.length === 0 && (
           <div className="empty-state">
             <p>Start a conversation by asking a question!</p>
+            {rateLimitInfo && (
+              <div className="rate-limit-info-empty">
+                <p className="rate-limit-text">
+                  You have <strong>{rateLimitInfo.remaining_interactions}</strong> of{' '}
+                  <strong>{rateLimitInfo.daily_limit}</strong> interactions remaining today.
+                </p>
+              </div>
+            )}
             <p className="examples">
               Examples:
               <br />• "Monthly RAV4 HEV sales in Germany in 2024"

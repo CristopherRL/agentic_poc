@@ -7,6 +7,12 @@
 
 An intelligent agent that answers natural-language questions by intelligently routing between SQL analytics, document retrieval (RAG), or both. This POC demonstrates rapid prototyping discipline with reusable ingestion scripts, configurable multi-model routing, transparent responses, and production-ready documentation.
 
+## 🌐 Live Demo
+
+**Try the application:** [https://agentic-poc-lake.vercel.app/](https://agentic-poc-lake.vercel.app/)
+
+**Note:** The demo has rate limiting enabled (20 interactions per day per IP address) to control costs and prevent abuse. If you need more interactions for testing or evaluation purposes, please contact me at **cristopher.rojas.lepe@gmail.com**.
+
 ## Project Structure
 
 This is a **monorepo** containing two projects:
@@ -564,73 +570,53 @@ This creates an optimized production build in `frontend/dist/`.
 
 ---
 
-## 8. Deployment to Vercel
+## 8. Deployment
 
-### 8.1. Prerequisites
+### 8.1. Deployment Architecture
 
-- Vercel account (free tier is sufficient)
-- GitHub/GitLab/Bitbucket repository (or use Vercel CLI)
+**Why separate deployments?**
+
+Due to Vercel Serverless Functions size limitations (250 MB uncompressed limit), the backend cannot be deployed on Vercel because:
+- `faiss-cpu` is ~150-200 MB
+- SQLite DB and FAISS index files add significant size
+- Total package exceeds Vercel's limits
+
+**Recommended Architecture:**
+- **Backend:** Deploy to [Render](https://render.com) (supports larger dependencies and data files)
+- **Frontend:** Deploy to [Vercel](https://vercel.com) (optimized for static sites)
+
+This separation provides:
+- ✅ Better isolation and independent scaling
+- ✅ No size limitations for backend dependencies
+- ✅ Optimized deployment for each service
+- ⚠️ Requires CORS configuration between services
+
+### 8.2. Backend Deployment (Render)
+
+#### Prerequisites
+- Render account (free tier available)
+- GitHub/GitLab/Bitbucket repository
 - Backend data ingested (SQLite DB and FAISS index)
 
-### 8.2. Deployment Strategy
-
-**Why `vercel.json` is in the root?**
-
-The root `vercel.json` is configured for **Option A** (single Vercel project). It tells Vercel:
-- Build backend as Python serverless functions (`api/index.py`)
-- Build frontend as static site (`frontend/package.json`)
-- Route `/api/*` to backend, `/*` to frontend
-
-**Two Deployment Options:**
-
-#### Option A: Single Vercel Project (Monorepo) - Current Setup ✅
-
-Deploy both backend and frontend as a single Vercel project:
+#### Deployment Steps
 
 1. **Connect Repository:**
-   - Go to [vercel.com](https://vercel.com)
-   - Click "New Project"
-   - Import your Git repository
+   - Go to [render.com](https://render.com)
+   - Click "New +" → "Web Service"
+   - Connect your Git repository
 
-2. **Configure Project:**
-   - **Framework Preset:** Other
-   - **Root Directory:** `.` (root - uses `vercel.json` and `api/index.py`)
-   - **Build Command:** Leave empty (Vercel will detect Python and Node.js)
-   - **Output Directory:** Leave empty
+2. **Configure Service:**
+   - **Name:** `agentic-poc-backend` (or your preferred name)
+   - **Environment:** Python 3
+   - **Root Directory:** `backend`
+   - **Build Command:** `pip install -r requirements.txt`
+   - **Start Command:** `uvicorn src.app.main:app --host 0.0.0.0 --port $PORT`
+   - Render will auto-detect `render.yaml` if present
 
-3. **Routes (configured in `vercel.json`):**
-   - `/api/*` → Backend serverless functions (`api/index.py`)
-   - `/*` → Frontend static files (`frontend/dist/`)
-
-**Pros:** Simple setup, single deployment, shared domain  
-**Cons:** Less isolation, harder to scale independently
-
-#### Option B: Separate Vercel Projects (Recommended for Production) 🚀
-
-Deploy backend and frontend as separate projects for better isolation:
-
-**Backend Project:**
-1. Create new Vercel project
-2. **Root Directory:** `.` (root)
-3. **Build Command:** Leave empty
-4. Uses `api/index.py` for serverless functions
-5. **No need for `vercel.json`** - Vercel auto-detects Python
-
-**Frontend Project:**
-1. Create new Vercel project  
-2. **Root Directory:** `frontend`
-3. **Framework Preset:** Vite (auto-detected)
-4. **No need for `vercel.json`** - Vercel auto-detects Vite
-
-**Pros:** Better isolation, independent scaling, separate domains  
-**Cons:** Two projects to manage, need to configure CORS
-
-**To switch to Option B:** You can delete the root `vercel.json` and deploy as separate projects.
-
-3. **Environment Variables:**
-   Add the following in Vercel dashboard → Settings → Environment Variables:
+3. **Environment Variables (in Render dashboard):**
    ```
-   OPENAI_API_KEY=sk-your-key-here
+   OPENAI_API_KEY=sk-your-key-here  # Required
+   CORS_ORIGINS=https://your-frontend.vercel.app  # Required for production
    ```
    Optionally add:
    ```
@@ -640,69 +626,94 @@ Deploy backend and frontend as separate projects for better isolation:
    ```
 
 4. **Deploy:**
+   - Click "Create Web Service"
+   - Render will build and deploy your backend
+   - Backend will be available at `https://your-backend.onrender.com`
+
+**Note:** The first deployment may take 5-10 minutes. Render includes the data files (`data/db/app.db`, `data/vdb/faiss_index/`) in the deployment.
+
+### 8.3. Frontend Deployment (Vercel)
+
+#### Prerequisites
+- Vercel account (free tier is sufficient)
+- Backend deployed on Render (get the backend URL)
+
+#### Deployment Steps
+
+1. **Connect Repository:**
+   - Go to [vercel.com](https://vercel.com)
+   - Click "New Project"
+   - Import your Git repository
+
+2. **Configure Project:**
+   - **Framework Preset:** Vite (auto-detected)
+   - **Root Directory:** `frontend`
+   - **Build Command:** `npm run build` (auto-detected)
+   - **Output Directory:** `dist` (auto-detected)
+
+   Alternatively, you can use the root-level `vercel.json` which is configured for frontend-only deployment.
+
+3. **Environment Variables (in Vercel dashboard):**
+   ```
+   VITE_API_URL=https://your-backend.onrender.com
+   ```
+   
+   **Important:** Do NOT include the `/api` prefix. The frontend will append `/api/v1/ask` automatically.
+
+4. **Deploy:**
    - Click "Deploy"
-   - Vercel will detect `vercel.json` and `api/index.py`
-   - Backend will be available at `https://your-project.vercel.app/api/`
+   - Vercel will build and deploy your frontend
+   - Frontend will be available at `https://your-project.vercel.app`
 
-**Option B: Using Vercel CLI**
+### 8.4. CORS Configuration
 
-```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Login
-vercel login
-
-# Deploy
-vercel
-
-# Set environment variables
-vercel env add OPENAI_API_KEY
-```
-
-### 8.3. Environment Variables
-
-**Backend (in Vercel dashboard or `backend/.env`):**
-```
-OPENAI_API_KEY=sk-your-key-here
-ADMIN_TOKEN=your-admin-token  # Optional
-CORS_ORIGINS=https://your-frontend.vercel.app  # For production
-```
-
-**Frontend (in Vercel dashboard or `frontend/.env.local`):**
-```
-VITE_API_URL=https://your-backend.vercel.app
-```
-
-**CORS Configuration:**
-
-The backend automatically reads `CORS_ORIGINS` environment variable. Set it in Vercel dashboard:
+The backend automatically reads `CORS_ORIGINS` environment variable. Configure it in Render:
 
 ```
 CORS_ORIGINS=https://your-frontend.vercel.app
 ```
 
-Or add multiple origins (comma-separated):
+For multiple origins (comma-separated):
 ```
 CORS_ORIGINS=https://frontend1.vercel.app,https://frontend2.vercel.app
 ```
 
-Local development origins (`localhost:5173`, `localhost:3000`) are included by default.
+Local development origins (`localhost:5173`, `localhost:3000`) are included by default, so CORS works automatically during local development.
 
-### 8.4. Post-Deployment Checklist
+### 8.5. Post-Deployment Checklist
 
-- [ ] Backend health check: `https://your-backend.vercel.app/health`
+**Backend (Render):**
+- [ ] Health check: `https://your-backend.onrender.com/health`
+- [ ] Environment variables configured (especially `OPENAI_API_KEY` and `CORS_ORIGINS`)
+- [ ] Data files are included in deployment (check logs)
+
+**Frontend (Vercel):**
 - [ ] Frontend loads correctly
+- [ ] `VITE_API_URL` environment variable points to Render backend URL
 - [ ] API requests work from frontend (check browser console)
-- [ ] CORS configured correctly
-- [ ] Environment variables set in Vercel dashboard
-- [ ] Data files (`data/db/app.db`, `data/vdb/faiss_index/`) are included in deployment
+- [ ] No CORS errors in browser console
 
-**Note:** For production, consider:
-- Using external storage for SQLite DB and FAISS index (e.g., Vercel Blob Storage, AWS S3)
-- Setting up proper CORS origins via environment variables
-- Configuring custom domains
-- Setting up monitoring and logging
+**Integration:**
+- [ ] Frontend successfully calls backend API
+- [ ] CORS configured correctly (no 401/403 errors)
+- [ ] Test with a sample question to verify end-to-end flow
+
+### 8.6. Troubleshooting
+
+**Issue: "Failed to fetch" in browser console**
+- Check that `VITE_API_URL` is set correctly in Vercel (should be Render backend URL)
+- Verify backend is running: `curl https://your-backend.onrender.com/health`
+- Check CORS configuration in Render environment variables
+
+**Issue: CORS errors (401/403)**
+- Verify `CORS_ORIGINS` in Render includes your Vercel frontend URL
+- Ensure no trailing slashes in URLs
+- Check browser console for exact error message
+
+**Issue: Backend deployment fails on Render**
+- Check build logs for Python dependency installation errors
+- Verify `requirements.txt` exists in `backend/` directory
+- Ensure data files are committed to repository (if not using external storage)
 
 ---
 
@@ -841,6 +852,8 @@ This POC is designed for **rapid demonstration** and **iterative development**. 
 - Email: cristopher.rojas.lepe@gmail.com
 
 Feel free to reach out for walkthroughs or to dive into any architectural or prompt-engineering detail. Every decision traces back to the PRD/TDD/backlog for quick context.
+
+**Need more demo interactions?** If you're testing the [live demo](https://agentic-poc-lake.vercel.app/) and need additional interactions beyond the daily limit, please email me and I'll be happy to increase your limit.
 
 ---
 
