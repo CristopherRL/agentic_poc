@@ -7,7 +7,14 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Project root (backend directory)
 def _default_project_root() -> Path:
-    return Path(__file__).resolve().parents[3]
+    # In Docker/Render containers, WORKDIR is /app
+    # Try current working directory first (works in containers and local if run from backend/)
+    cwd = Path.cwd()
+    if (cwd / "src" / "app" / "config.py").exists() or (cwd / "docs" / "public" / "data").exists():
+        return cwd
+    # Fallback: calculate from this file location (local development)
+    # __file__ is backend/src/app/config.py, so parents[2] = backend/
+    return Path(__file__).resolve().parents[2]
 
 # ----- SQLITE DATABASE -----
 # CSV directory
