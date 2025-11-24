@@ -29,10 +29,19 @@ class ConversationHistory:
         if not history:
             return ""
         
-        lines = ["Previous conversation:"]
-        for question, answer in history:
-            lines.append(f"Q: {question}")
-            lines.append(f"A: {answer}")
+        lines = ["=== PREVIOUS CONVERSATION CONTEXT ==="]
+        for idx, (question, answer) in enumerate(history, 1):
+            lines.append(f"\n[Exchange {idx}]")
+            lines.append(f"User: {question}")
+            # Extract key information from answer (first sentence usually contains the key data)
+            answer_preview = answer.split('.')[0] if answer else ""
+            lines.append(f"Assistant: {answer_preview}")
+        lines.append("\n=== CONTEXT RULES ===")
+        lines.append("When the user asks follow-up questions:")
+        lines.append("- If they change ONE aspect (e.g., 'what about 2023'), KEEP all other filters from previous questions")
+        lines.append("- If they add a filter (e.g., 'but only Toyota'), COMBINE it with filters from previous questions")
+        lines.append("- Example: Previous='Toyota sales in 2022', Current='what about 2023' → Use: brand='Toyota' AND year=2023")
+        lines.append("=== END CONTEXT ===\n")
         return "\n".join(lines)
 
 
