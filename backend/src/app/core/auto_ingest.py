@@ -90,11 +90,35 @@ def auto_ingest_if_needed() -> None:
         logger.info("")
         try:
             import sys
-            # Add backend directory to path so we can import scripts
-            backend_dir = Path(__file__).resolve().parents[3]
+            # Find backend directory - try multiple approaches
+            # 1. Try current working directory (works in Render)
+            cwd = Path.cwd()
+            if (cwd / "scripts" / "ingest_sql.py").exists():
+                backend_dir = cwd
+            # 2. Try relative to this file (works in local development)
+            elif (Path(__file__).resolve().parents[3] / "scripts" / "ingest_sql.py").exists():
+                backend_dir = Path(__file__).resolve().parents[3]
+            # 3. Try using project_root from settings
+            elif (settings.project_root / "scripts" / "ingest_sql.py").exists():
+                backend_dir = settings.project_root
+            else:
+                # Fallback: assume we're in backend directory
+                backend_dir = Path.cwd()
+            
+            # Verify scripts directory exists
+            scripts_path = backend_dir / "scripts" / "ingest_sql.py"
+            if not scripts_path.exists():
+                raise FileNotFoundError(
+                    f"Scripts directory not found. Tried: {scripts_path}. "
+                    f"Current working directory: {Path.cwd()}. "
+                    f"Python path: {sys.path[:3]}"
+                )
+            
             if str(backend_dir) not in sys.path:
                 sys.path.insert(0, str(backend_dir))
             
+            logger.info(f"  [SQL Database] Using backend directory: {backend_dir}")
+            logger.info(f"  [SQL Database] Scripts path: {scripts_path}")
             logger.info("  [SQL Database] Importing ingest script...")
             from scripts.ingest_sql import ingest as ingest_sql
             
@@ -119,11 +143,35 @@ def auto_ingest_if_needed() -> None:
         logger.info("")
         try:
             import sys
-            # Add backend directory to path so we can import scripts
-            backend_dir = Path(__file__).resolve().parents[3]
+            # Find backend directory - try multiple approaches
+            # 1. Try current working directory (works in Render)
+            cwd = Path.cwd()
+            if (cwd / "scripts" / "ingest_rag.py").exists():
+                backend_dir = cwd
+            # 2. Try relative to this file (works in local development)
+            elif (Path(__file__).resolve().parents[3] / "scripts" / "ingest_rag.py").exists():
+                backend_dir = Path(__file__).resolve().parents[3]
+            # 3. Try using project_root from settings
+            elif (settings.project_root / "scripts" / "ingest_rag.py").exists():
+                backend_dir = settings.project_root
+            else:
+                # Fallback: assume we're in backend directory
+                backend_dir = Path.cwd()
+            
+            # Verify scripts directory exists
+            scripts_path = backend_dir / "scripts" / "ingest_rag.py"
+            if not scripts_path.exists():
+                raise FileNotFoundError(
+                    f"Scripts directory not found. Tried: {scripts_path}. "
+                    f"Current working directory: {Path.cwd()}. "
+                    f"Python path: {sys.path[:3]}"
+                )
+            
             if str(backend_dir) not in sys.path:
                 sys.path.insert(0, str(backend_dir))
             
+            logger.info(f"  [Vector Store] Using backend directory: {backend_dir}")
+            logger.info(f"  [Vector Store] Scripts path: {scripts_path}")
             logger.info("  [Vector Store] Importing RAG ingest script...")
             from scripts.ingest_rag import ingest as ingest_rag
             
