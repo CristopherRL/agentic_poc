@@ -96,3 +96,8 @@ class ResetRateLimitRequest(BaseModel):
 class ResetRateLimitResponse(BaseModel):
     message: str
     records_reset: int
+
+
+class DataSummaryResponse(BaseModel):
+    sql_summary: str = Field(description="Summary of SQL tables and data")
+    rag_summary: str = Field(description="Summary of RAG documents")

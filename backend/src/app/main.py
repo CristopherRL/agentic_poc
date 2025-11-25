@@ -79,12 +79,15 @@ if cors_origins_env:
     production_origins = [origin.strip() for origin in cors_origins_env.split(",") if origin.strip()]
     default_origins.extend(production_origins)
 
+# CORS middleware must be added BEFORE including routers
 app.add_middleware(
     CORSMiddleware,
     allow_origins=default_origins,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["*"],  # Allow all methods including OPTIONS
     allow_headers=["*"],
+    expose_headers=["*"],
+    max_age=3600,
 )
 
 app.include_router(router)

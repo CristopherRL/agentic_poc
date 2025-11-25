@@ -8,6 +8,7 @@ from src.app.api.schemas import (
     AskRequest,
     AskResponse,
     Citation,
+    DataSummaryResponse,
     RateLimitInfo,
     RateLimitStats,
     RateLimitStatsResponse,
@@ -313,4 +314,33 @@ async def reset_rate_limit(
     return ResetRateLimitResponse(
         message=message,
         records_reset=records_reset,
+    )
+
+
+@router.get("/data-summary", response_model=DataSummaryResponse)
+async def get_data_summary() -> DataSummaryResponse:
+    """
+    Get summaries of available SQL data and RAG documents.
+    
+    Returns:
+        DataSummaryResponse with SQL and RAG summaries
+    """
+    sql_summary_path = settings.sqlite_path.parent / "sql_summary.md"
+    rag_summary_path = settings.faiss_index_dir.parent / "rag_summary.md"
+    
+    sql_summary = ""
+    if sql_summary_path.exists():
+        sql_summary = sql_summary_path.read_text(encoding="utf-8")
+    else:
+        sql_summary = "SQL summary not available. Please run the SQL ingestion script."
+    
+    rag_summary = ""
+    if rag_summary_path.exists():
+        rag_summary = rag_summary_path.read_text(encoding="utf-8")
+    else:
+        rag_summary = "RAG summary not available. Please run the RAG ingestion script."
+    
+    return DataSummaryResponse(
+        sql_summary=sql_summary,
+        rag_summary=rag_summary,
     )

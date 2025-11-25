@@ -204,7 +204,7 @@ python -m scripts.ingest_sql
 **Process:**
 1. Reads CSV files from `docs/public/data/`
 2. Creates SQLite database at `data/db/app.db`
-3. Generates schema artifact at `data/db/sql_schema.md` (used for SQL generation prompts)
+3. Generates schema artifact at `data/db/sql_schema.sql` (used for SQL generation prompts)
 
 **Reset Database:**
 ```bash

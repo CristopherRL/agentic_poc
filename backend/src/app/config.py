@@ -25,7 +25,7 @@ def _default_sqlite_path() -> Path:
     return _default_project_root() / "data" / "db" / "app.db"
 # SQL schema report path
 def _default_sql_schema_path() -> Path:
-    return _default_project_root() / "data" / "db" / "sql_schema.md"
+    return _default_project_root() / "data" / "db" / "sql_schema.sql"
 
 # ----- RAG DATABASE -----
 # Documents directory
@@ -70,6 +70,13 @@ def _default_synthesis_llm_model() -> str:
 # Define Synthesis LLM temperature
 def _default_synthesis_llm_temperature() -> float:
     return 0.2
+
+# Define Summary LLM model (for SQL/RAG summaries)
+def _default_summary_llm_model() -> str:
+    return "gpt-4o-mini"
+# Define Summary LLM temperature
+def _default_summary_llm_temperature() -> float:
+    return 0.0
 
 # Define RAG top k
 def _default_rag_top_k() -> int:
@@ -196,7 +203,16 @@ def _default_sql_system_prompt() -> str:
     return (
         "You are a sales analytics assistant. Summarize the SQL results clearly and reference key figures. "
         "If the result is empty, explain why or state that more data is required. "
-        "Never mention actual table or column names in your responses. Use generic descriptions like 'sales data table' or 'geography information'."
+        "Never mention the exact table names or column names in your responses. Use generic descriptions like 'sales data table' or 'geography information'."
+    )
+
+# Define SQL summary prompt (for generating user-facing summaries)
+def _default_sql_summary_prompt() -> str:
+    return (
+        "You are a data analyst assistant. Generate a brief, user-friendly summary of the database schema provided. "
+        "Focus on what data is available and what users can query. "
+        "Never mention the exact table names or column names in your responses. "
+        "Use generic descriptions like 'sales data table', 'geography information', 'vehicle catalog', or 'order classifications'."
     )
 
 # Define Hybrid system prompt to combine the SQL and RAG results
@@ -353,6 +369,8 @@ class Settings(BaseSettings):
     synthesis_llm_temperature: float = Field(default_factory=_default_synthesis_llm_temperature)
     split_llm_model: str = Field(default_factory=_default_split_llm_model)
     split_llm_temperature: float = Field(default_factory=_default_split_llm_temperature)
+    summary_llm_model: str = Field(default_factory=_default_summary_llm_model)
+    summary_llm_temperature: float = Field(default_factory=_default_summary_llm_temperature)
 
     # Retrieval tuning
     rag_top_k: int = Field(default_factory=_default_rag_top_k)
@@ -379,6 +397,7 @@ class Settings(BaseSettings):
     sql_generation_system_prompt: str = Field(default_factory=_default_sql_generation_system_prompt)
     sql_generation_user_prompt: str = Field(default_factory=_default_sql_generation_user_prompt)
     sql_system_prompt: str = Field(default_factory=_default_sql_system_prompt)
+    sql_summary_prompt: str = Field(default_factory=_default_sql_summary_prompt)
     hybrid_system_prompt: str = Field(default_factory=_default_hybrid_system_prompt)
     hybrid_split_system_prompt: str = Field(default_factory=_default_hybrid_split_system_prompt)
     hybrid_split_user_prompt: str = Field(default_factory=_default_hybrid_split_user_prompt)

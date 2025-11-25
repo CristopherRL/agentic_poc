@@ -82,6 +82,25 @@ CREATE TABLE "FACT_SALES_ORDERTYPE" (
 -- model_id: 100, country_code: "DE", year: 2023, month: 2, contracts: 88, ordertype_id: 1
 
 -- ============================================================================
+-- Table: rate_limit
+-- Purpose: Rate limiting system table for tracking daily interactions per identifier.
+-- ============================================================================
+CREATE TABLE rate_limit (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    identifier TEXT NOT NULL,
+    date TEXT NOT NULL,
+    interaction_count INTEGER NOT NULL DEFAULT 0,
+    last_interaction_at TEXT,
+    UNIQUE(identifier, date)
+);
+
+-- ============================================================================
+-- Table: sqlite_sequence
+-- Purpose: SQLite system table for tracking AUTOINCREMENT sequences.
+-- ============================================================================
+CREATE TABLE sqlite_sequence(name,seq);
+
+-- ============================================================================
 -- Relationships:
 -- ============================================================================
 -- FACT_SALES.model_id -> DIM_MODEL.model_id
@@ -89,3 +108,26 @@ CREATE TABLE "FACT_SALES_ORDERTYPE" (
 -- FACT_SALES_ORDERTYPE.model_id -> DIM_MODEL.model_id
 -- FACT_SALES_ORDERTYPE.country_code -> DIM_COUNTRY.country_code
 -- FACT_SALES_ORDERTYPE.ordertype_id -> DIM_ORDERTYPE.ordertype_id
+
+-- ============================================================================
+-- Sample Data Examples:
+-- ============================================================================
+-- DIM_COUNTRY sample rows:
+--   {"country": "Germany", "country_code": "DE", "region": "Western Europe"}
+--   {"country": "France", "country_code": "FR", "region": "Western Europe"}
+--
+-- DIM_MODEL sample rows:
+--   {"model_id": 100, "model_name": "RAV4", "brand": "Toyota", "segment": "SUV", "powertrain": "HEV"}
+--   {"model_id": 101, "model_name": "RAV4", "brand": "Toyota", "segment": "SUV", "powertrain": "PHEV"}
+--
+-- DIM_ORDERTYPE sample rows:
+--   {"ordertype_id": 1, "ordertype_name": "Private", "description": "B2C personal purchase"}
+--   {"ordertype_id": 2, "ordertype_name": "Fleet", "description": "B2B company fleet"}
+--
+-- FACT_SALES sample rows:
+--   {"model_id": 100, "country_code": "DE", "year": 2023, "month": 1, "contracts": 77}
+--   {"model_id": 100, "country_code": "DE", "year": 2023, "month": 2, "contracts": 88}
+--
+-- FACT_SALES_ORDERTYPE sample rows:
+--   {"model_id": 100, "country_code": "DE", "year": 2023, "month": 1, "contracts": 77, "ordertype_id": 1}
+--   {"model_id": 100, "country_code": "DE", "year": 2023, "month": 2, "contracts": 88, "ordertype_id": 1}

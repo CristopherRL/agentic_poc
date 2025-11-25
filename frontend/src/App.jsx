@@ -8,7 +8,10 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { cn } from '@/lib/utils'
 import ReactMarkdown from 'react-markdown'
 
-const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '' : 'http://localhost:8000')
+// API URL configuration:
+// - Dev: empty string uses Vite proxy (no CORS needed)
+// - Prod: set VITE_API_URL to backend URL (e.g., https://backend.onrender.com)
+const API_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '')
 
 function App() {
   const [messages, setMessages] = useState([])
@@ -20,6 +23,7 @@ function App() {
     return localStorage.getItem('sessionId') || null
   })
   const [error, setError] = useState(null)
+  const [dataSummary, setDataSummary] = useState(null)
   const scrollRef = useRef(null)
   const inputRef = useRef(null)
 
@@ -33,6 +37,24 @@ function App() {
       }
     }
   }, [messages, isLoading])
+
+  // Load data summary on mount
+  useEffect(() => {
+    const fetchDataSummary = async () => {
+      try {
+        const url = API_URL ? `${API_URL}/api/v1/data-summary` : '/api/v1/data-summary'
+        const response = await fetch(url)
+        if (response.ok) {
+          const data = await response.json()
+          setDataSummary(data)
+        }
+      } catch (err) {
+        // Silently fail - summary is optional
+        console.warn('Failed to load data summary:', err)
+      }
+    }
+    fetchDataSummary()
+  }, [])
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return
@@ -51,7 +73,8 @@ function App() {
     setIsLoading(true)
 
     try {
-      const response = await fetch(`${API_URL}/api/v1/ask`, {
+      const url = API_URL ? `${API_URL}/api/v1/ask` : '/api/v1/ask'
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -163,6 +186,34 @@ function App() {
                   {rateLimitInfo.remaining_interactions} / {rateLimitInfo.daily_limit}
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* Data Summary */}
+          {dataSummary && (
+            <div className="px-4 pb-4">
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="data-summary" className="border-none">
+                  <AccordionTrigger className="rounded-lg border border-border bg-muted/30 px-3 py-2 text-xs hover:no-underline">
+                    <span className="inline-flex items-center gap-1">
+                      <Database className="h-3 w-3" />
+                      <span>Available Data</span>
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-0 pt-2">
+                    <div className="space-y-3 rounded-lg border border-border bg-muted/30 p-3 text-xs">
+                      <div>
+                        <div className="mb-1 font-medium text-foreground">SQL Data</div>
+                        <div className="text-muted-foreground whitespace-pre-line">{dataSummary.sql_summary}</div>
+                      </div>
+                      <div className="border-t border-border pt-3">
+                        <div className="mb-1 font-medium text-foreground">RAG Documents</div>
+                        <div className="text-muted-foreground whitespace-pre-line">{dataSummary.rag_summary}</div>
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </div>
           )}
 

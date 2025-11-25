@@ -95,6 +95,29 @@ User Question → FastAPI → Agent Router → [SQL Tool | RAG Tool | Both]
 - RAG: "What is the standard Toyota warranty for Europe?"
 - Hybrid: "Compare Toyota vs Lexus SUV sales in Western Europe in 2024 and summarize key warranty differences"
 
+### What Can You Ask?
+
+The assistant can answer questions about:
+
+**SQL Analytics (Structured Data):**
+- Sales data by model, country, region, year, and month
+- Comparisons between Toyota and Lexus brands
+- Vehicle segment and powertrain analysis (Petrol, HEV, PHEV)
+- Order type breakdowns (Private, Fleet, Demo)
+- Regional performance analysis (e.g., Western Europe)
+
+**RAG Documents (Unstructured Data):**
+- Contract terms and conditions for Toyota and Lexus (2023)
+- Warranty policies and coverage details
+- Owner's manual information (RAV4, YARIS GRMN)
+- Safety instructions and maintenance guidelines
+- Vehicle operation and feature explanations
+
+**Hybrid Queries:**
+- Combine sales analytics with policy/document information
+- Compare sales performance with warranty terms
+- Analyze market data alongside operational documentation
+
 ---
 
 ## Architecture Overview
